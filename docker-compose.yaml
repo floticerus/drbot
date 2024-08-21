@@ -1,0 +1,28 @@
+services:
+  bot:
+    build:
+      context: ./bot
+      dockerfile: ./Dockerfile
+    container_name: bot
+    restart: unless-stopped
+    read_only: true
+    volumes:
+      - ${MEDIA_PATH}:/Media:ro
+    environment:
+      - DISCORD_OWNER=${DISCORD_OWNER}
+      - DISCORD_APPLICATION_ID=${DISCORD_APPLICATION_ID}
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - MEDIA_PATH=/Media
+      - REDIS_URL=redis://redis:6379
+      - SCAN_MEDIA_ON_START=${SCAN_MEDIA_ON_START}
+      - WATCH_MEDIA=${WATCH_MEDIA}
+  
+  redis:
+#    TODO find an alpine image with redisearch :') or build one...
+    image: redis/redis-stack-server:latest
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+    environment:
+      REDIS_ARGS: --save 60 1 --loglevel warning
