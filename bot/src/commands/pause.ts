@@ -20,7 +20,10 @@ export default {
           await interaction.reply('Paused playback 🙊')
         }
       } else {
-        console.error(`No connection for channel **${voice.id}**`)
+        if (interaction.isRepliable()) {
+          await interaction.reply('Not in voice channel')
+        }
+        console.error(`No connection for channel ${voice.id}`)
       }
     } else {
       if (interaction.isRepliable()) {

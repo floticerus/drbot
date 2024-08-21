@@ -55,4 +55,14 @@ export const watchForMedia = async () => {
     .on('change', (path) =>
       updateMediaAtPath(path).catch((err) => console.error(err)),
     )
+    //
+    .on('unlink', async (path) => {
+      try {
+        // console.log(`File removed: ${path}`)
+        await redisClient.del(`media:${path}`)
+        // console.log(`Removed from index: ${path}`)
+      } catch (err) {
+        console.error(err)
+      }
+    })
 }

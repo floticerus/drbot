@@ -1,0 +1,10 @@
+services:
+  redis:
+    #    TODO find an alpine image with redisearch :') or build one...
+    image: redis/redis-stack-server:latest
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+    environment:
+      REDIS_ARGS: --save 60 1 --loglevel warning

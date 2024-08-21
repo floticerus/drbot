@@ -16,3 +16,13 @@ events.on(
     )
   },
 )
+
+events.on(
+  'index:prune:complete',
+  ({ duration, numDeleted }: { duration: number; numDeleted: number }) => {
+    const seconds = duration / 1000
+    console.log(
+      `Pruning removed ${numDeleted ? '~' : ''}${numDeleted} media entries in ${seconds} second${seconds === 1 ? '' : 's'}`,
+    )
+  },
+)
