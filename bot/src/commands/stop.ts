@@ -20,13 +20,19 @@ export default {
 
         await connection.stop({ destroyConnection: false })
       } else {
-        console.error(`No connection for channel **${voice.id}** 🫣`)
+        if (interaction.isRepliable()) {
+          await interaction.reply({
+            content: 'Not in voice channel',
+            ephemeral: true,
+          })
+        }
       }
     } else {
       if (interaction.isRepliable()) {
-        await interaction.reply(
-          'Must be in a voice channel to use this command 🥺',
-        )
+        await interaction.reply({
+          content: 'Must be in a voice channel to use this command 🥺',
+          ephemeral: true,
+        })
       }
     }
   },

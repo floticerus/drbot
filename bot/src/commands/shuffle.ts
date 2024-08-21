@@ -60,9 +60,10 @@ export default {
       }
     } else {
       if (interaction.isRepliable()) {
-        await interaction.reply(
-          'Must be in a voice channel to use this command',
-        )
+        await interaction.reply({
+          content: 'Must be in a voice channel to use this command',
+          ephemeral: true,
+        })
       }
     }
   },

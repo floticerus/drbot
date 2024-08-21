@@ -82,18 +82,23 @@ export default {
                 `${lines.join('\n').substring(0, 420)}...`,
               )
             } else {
+              // don't use an ephemeral reply here - it might be nice for everyone to see what didn't work
               await interaction.reply(`No results for query: **${query}**`)
             }
           } catch (err) {
             console.error(err)
           }
         } else {
-          await interaction.reply('Voice channel is not joinable 😒')
+          await interaction.reply({
+            content: 'Voice channel is not joinable 😒',
+            ephemeral: true,
+          })
         }
       } else {
-        await interaction.reply(
-          'Must be in a voice channel to use this command 😱',
-        )
+        await interaction.reply({
+          content: 'Must be in a voice channel to use this command 😱',
+          ephemeral: true,
+        })
       }
     }
   },

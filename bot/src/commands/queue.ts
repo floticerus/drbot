@@ -3,6 +3,7 @@ import type { CommandInfo } from '~/bot/types/types.js'
 import { connections } from '~/bot/discord/voice.js'
 import { getVoiceChannelForInteraction } from '~/bot/util/index.js'
 import { getDisplayStringForMedia } from '~/bot/util/getDisplayStringForMedia.js'
+import formatDuration from 'format-duration'
 
 export default {
   data: new SlashCommandBuilder()
@@ -17,11 +18,11 @@ export default {
 
         if (connection) {
           await interaction.reply(
-            `**Queue**: ${connection.queue.length} track${connection.queue.length === 1 ? '' : 's'}, ${
+            `**Queue**: ${connection.queue.length} track${connection.queue.length === 1 ? '' : 's'} [${formatDuration(
               connection.queue.reduce((previousValue, currentValue) => {
                 return previousValue + Number(currentValue.duration)
-              }, 0) / 60
-            } minutes\r\n` +
+              }, 0) * 1000,
+            )}]\r\n` +
               connection.queue
                 .filter((_, index) => index < 10)
                 .map(
@@ -31,13 +32,17 @@ export default {
                 .join(''),
           )
         } else {
-          await interaction.reply('Not in voice channel')
+          await interaction.reply({
+            content: 'Not in voice channel',
+            ephemeral: true,
+          })
         }
       } else {
         if (interaction.isRepliable()) {
-          await interaction.reply(
-            'Must be in a voice channel to use this command 😒',
-          )
+          await interaction.reply({
+            content: 'Must be in a voice channel to use this command 😒',
+            ephemeral: true,
+          })
         }
       }
     }

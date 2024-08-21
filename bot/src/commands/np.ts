@@ -55,7 +55,10 @@ export default {
 
             connection.on('nowplaying', onNowPlaying)
           } else {
-            await interaction.reply('Not playing 😿')
+            await interaction.reply({
+              content: 'Not playing 😿',
+              ephemeral: true,
+            })
           }
         }
       } else {
@@ -63,9 +66,10 @@ export default {
       }
     } else {
       if (interaction.isRepliable()) {
-        await interaction.reply(
-          'Must be in a voice channel to use this command 😤',
-        )
+        await interaction.reply({
+          content: 'Must be in a voice channel to use this command 😤',
+          ephemeral: true,
+        })
       }
     }
   },
