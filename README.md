@@ -23,10 +23,6 @@ I use `docker compose` to make life easy, but you don't have to.
 
 You can run the bot without docker, it lives in the `/bot` folder.
 
-### Use as a repository template
-
-To start, just click the **[Use template][repo-template-action]** link (or the green button). Start adding your code in the `src` and unit tests in the `__tests__` directories.
-
 ### Download latest release
 
 Release? There is no release! 😤
