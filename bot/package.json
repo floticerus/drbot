@@ -1,6 +1,6 @@
 {
   "name": "drbot",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Discord music bot for local files",
   "type": "module",
   "author": "Dr. Kevin",
