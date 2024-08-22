@@ -1,12 +1,11 @@
 FROM node:22-alpine
-WORKDIR /usr/server/app
 
 # install deps on alpine
-# note that alpine uses `apk` instead of `apt`
 RUN apk update && apk add \
-#    for compiling. only used for sodium-native at the moment
+#    for compiling. only used for sodium-native at the moment.
+#    this makes the image quite large but native sodium sounds better than js sodium :'(
     build-base python3 \
-#    this is for ffmpeg
+#    install ffmpeg for ffmpeg
     ffmpeg
 
 # copy both package.json and package-lock.json
