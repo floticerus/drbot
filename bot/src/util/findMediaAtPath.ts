@@ -1,3 +1,4 @@
+import { basename } from 'node:path'
 import type { PathLike } from 'node:fs'
 import type { MediaInfo } from '~/bot/types/types.js'
 import { parseFile } from 'music-metadata'
@@ -9,7 +10,7 @@ export const findMediaAtPath = (
   return new Promise((resolve) => {
     const pathString = path.toString()
     if (
-      !pathString.startsWith('.') &&
+      !basename(pathString).startsWith('.') &&
       mime.getType(pathString)?.startsWith('audio/')
     ) {
       parseFile(pathString)
