@@ -3,7 +3,11 @@ WORKDIR /usr/server/app
 
 # install deps on alpine
 # note that alpine uses `apk` instead of `apt`
-RUN apk update && apk add build-base ffmpeg python3
+RUN apk update && apk add \
+#    for compiling. only used for sodium-native at the moment
+    build-base python3 \
+#    this is for ffmpeg
+    ffmpeg
 
 # copy both package.json and package-lock.json
 COPY ./package*.json ./
