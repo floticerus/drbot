@@ -8,7 +8,7 @@ export const findMediaAtPath = (
 ): Promise<MediaInfo | undefined> => {
   return new Promise((resolve) => {
     const pathString = path.toString()
-    if (mime.getType(pathString).startsWith('audio/')) {
+    if (mime.getType(pathString)?.startsWith('audio/')) {
       parseFile(pathString)
         // strip `native` and `quality` out of parsed result. note this throws @typescript-eslint/no-unused-vars
         .then(({ native, quality, ...parsed }) =>
