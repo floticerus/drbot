@@ -9,7 +9,7 @@ export const randomizeString = (
     randomCharacters = 'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 !@#$%^&*()_+,./;\'[]\\<>?:"~`',
     randomizeCharactersChance = 0.5,
   }: RandomizeStringOptions = {},
-) => {
+): string => {
   return inString
     .split('')
     .map((char) =>

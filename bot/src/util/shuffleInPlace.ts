@@ -1,4 +1,4 @@
-export const shuffleInPlace = <ArrayType = unknown>(input: ArrayType[]) => {
+export const shuffleInPlace = <ArrayType = unknown>(input: ArrayType[]): ArrayType[] => {
   // Here's a JavaScript implementation of the Durstenfeld shuffle, an optimized version of Fisher-Yates
   // https://stackoverflow.com/a/12646864
   for (let i = input.length - 1; i > 0; i--) {

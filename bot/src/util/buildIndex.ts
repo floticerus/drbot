@@ -20,7 +20,7 @@ export const buildIndex = async (): Promise<void> => {
     // it would be cooler if we passed the `query` var returned
     // by `multi()` to the prune function...
     pruneIndex(),
-    (async () => {
+    (async (): Promise<void> => {
       const query = redisClient.multi()
 
       await Promise.all(

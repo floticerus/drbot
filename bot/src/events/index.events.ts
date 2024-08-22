@@ -4,7 +4,7 @@ events.on('index:start', () => {
   console.log('Building index... this could take a little bit')
 })
 
-events.on('index:found', (_numResults: number) => {
+events.on('index:found', (/* _numResults: number */) => {
   // console.log(`Indexing ${numResults} media file${numResults === 1 ? '' : 's'}`)
 })
 

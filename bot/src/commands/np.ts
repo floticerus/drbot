@@ -30,7 +30,7 @@ export default {
               media,
             }: {
               media: MediaInfoStored
-            }) => {
+            }): Promise<void> => {
               if (media) {
                 try {
                   await response.edit(

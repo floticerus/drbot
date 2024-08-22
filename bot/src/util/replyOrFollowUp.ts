@@ -7,7 +7,7 @@ import {
 export const replyOrFollowUp = async (
   interaction: Interaction,
   options: string | MessagePayload | InteractionReplyOptions,
-) => {
+): Promise<void> => {
   if (interaction.isRepliable()) {
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp(options)

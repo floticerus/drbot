@@ -6,7 +6,7 @@ import { events } from '~/bot/events/index.js'
 /**
  * removes entries from db if we no longer have access
  */
-export const pruneIndex = async () => {
+export const pruneIndex = async (): Promise<void> => {
   events.emit('index:prune:start')
 
   const startTime = Date.now()

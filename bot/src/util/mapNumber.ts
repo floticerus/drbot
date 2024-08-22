@@ -5,6 +5,6 @@ export const mapNumber = (
   inMax: number,
   outMin = 0,
   outMax = 1,
-) => {
+): number => {
   return ((number - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
 }

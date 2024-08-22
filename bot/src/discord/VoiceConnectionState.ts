@@ -37,34 +37,34 @@ export class VoiceConnectionState extends EventEmitter {
   public readonly adapterCreator: InternalDiscordGatewayAdapterCreator
 
   protected _connection?: VoiceConnection
-  public get connection() {
+  public get connection(): VoiceConnection {
     return this._connection
   }
 
   protected _player?: AudioPlayer
-  public get player() {
+  public get player(): AudioPlayer {
     return this._player
   }
 
   protected _nowPlaying?: MediaInfoStored
-  public get nowPlaying() {
+  public get nowPlaying(): MediaInfoStored {
     return this._nowPlaying
   }
 
   protected _queue: MediaInfoStored[] = []
-  public get queue() {
+  public get queue(): MediaInfoStored[] {
     return this._queue
   }
 
   protected _paused: boolean = false
-  public get paused() {
+  public get paused(): boolean {
     return this._paused
   }
 
   static fromVoiceChannel({
     id: channelId,
     guild: { id: guildId, voiceAdapterCreator: adapterCreator },
-  }: VoiceBasedChannel) {
+  }: VoiceBasedChannel): VoiceConnectionState {
     return new VoiceConnectionState({
       channelId,
       guildId,
@@ -72,7 +72,7 @@ export class VoiceConnectionState extends EventEmitter {
     })
   }
 
-  async start() {
+  async start(): Promise<void> {
     // we're importing this way to avoid circular deps
     const { connections } = await import('./voice.js')
     if (connections[this.channelId]) {
@@ -95,7 +95,7 @@ export class VoiceConnectionState extends EventEmitter {
 
   async stop({
     destroyConnection = true,
-  }: { destroyConnection?: boolean } = {}) {
+  }: { destroyConnection?: boolean } = {}): Promise<void> {
     // we're importing this way to avoid circular deps
     const { connections } = await import('./voice.js')
     this._nowPlaying = undefined
@@ -107,7 +107,7 @@ export class VoiceConnectionState extends EventEmitter {
     this.emit('stop', { channelId })
   }
 
-  async addToQueue(media: MediaInfoStored) {
+  async addToQueue(media: MediaInfoStored): Promise<number> {
     const position = this._queue.push(media) - 1
     this.emit('queued', { position, media })
     if (!this._nowPlaying) {
@@ -117,7 +117,7 @@ export class VoiceConnectionState extends EventEmitter {
     return position
   }
 
-  play(media: MediaInfoStored) {
+  play(media: MediaInfoStored): void {
     this._nowPlaying = media
     this.emit('nowplaying', { media })
     this._player = createAudioPlayer({})
@@ -144,7 +144,7 @@ export class VoiceConnectionState extends EventEmitter {
     this._player.play(resource)
   }
 
-  async playNextOrStop() {
+  async playNextOrStop(): Promise<void> {
     const mediaInfo = this._queue.shift()
 
     if (mediaInfo) {
@@ -154,19 +154,19 @@ export class VoiceConnectionState extends EventEmitter {
     }
   }
 
-  pause() {
+  pause(): void {
     if (this._player) {
       this._player.pause(true)
     }
   }
 
-  resume() {
+  resume(): void {
     if (this._player) {
       this._player.unpause()
     }
   }
 
-  shuffle() {
+  shuffle(): void {
     shuffleInPlace(this._queue)
   }
 }

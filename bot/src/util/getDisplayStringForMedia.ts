@@ -7,7 +7,7 @@ export const getDisplayStringForMedia = ({
   artist: _artist,
   duration: _duration,
   title: _title,
-}: MediaInfoStored) => {
+}: MediaInfoStored): string => {
   const artist = _artist ?? _albumArtist ?? 'Unknown artist'
   const album = _album ?? 'Unknown album'
   const duration = formatDuration(Number(_duration * 1000))

@@ -3,14 +3,14 @@ import redisClient from '~/bot/db/index.js'
 import { findMediaAtPath } from '~/bot/util/findMediaAtPath.js'
 import { basename } from 'node:path'
 
-export const watchForMedia = async () => {
+export const watchForMedia = async (): Promise<void> => {
   // TODO we might need to batch these and run all with multi
-  const updateMediaAtPath = async (path: string) => {
+  const updateMediaAtPath = async (path: string): Promise<void> => {
     const media = await findMediaAtPath(path)
 
     if (media) {
       const {
-        path: _path,
+        // path: _path,
         metadata: {
           format: { duration },
           common: {
