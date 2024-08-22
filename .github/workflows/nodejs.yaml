@@ -8,10 +8,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: cd bot
-      - run: npm ci --no-audit
-      - run: npm run lint --if-present
-      - run: npm test
-      - run: npm run build --if-present
+      - name: Install
+        working-directory: ./bot
+        run: npm ci --no-audit
+      - name: Lint
+        working-directory: ./bot
+        run: npm run lint --if-present
+      - name: Test
+        working-directory: ./bot
+        run: npm test
+      - name: Build
+        working-directory: ./bot
+        run: npm run build --if-present
         env:
           CI: true
