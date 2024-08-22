@@ -20,8 +20,13 @@ jobs:
 #      - name: Test
 #        working-directory: ./bot
 #        run: npm test
-      - name: Build
+      - name: Build (dev)
         working-directory: ./bot
         run: npm run build --if-present
+        env:
+          CI: true
+      - name: Build (release)
+        working-directory: ./bot
+        run: npm run build:release --if-present
         env:
           CI: true
