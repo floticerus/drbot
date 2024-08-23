@@ -1,7 +1,7 @@
 services:
-  bot:
+  drbot:
     image: kmvf/drbot:latest
-    container_name: bot
+    container_name: drbot
     restart: unless-stopped
     read_only: true
     volumes:
