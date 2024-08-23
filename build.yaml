@@ -1,9 +1,9 @@
 services:
-  bot:
+  drbot:
     build:
       context: ./bot
       dockerfile: ./Dockerfile
-    container_name: bot
+    container_name: drbot
     restart: unless-stopped
     read_only: true
     volumes:
