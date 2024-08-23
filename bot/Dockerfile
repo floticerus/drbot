@@ -1,7 +1,7 @@
 FROM node:20-alpine
 
 # install deps on alpine
-RUN apk update --no-cache && apk add --no-cache \
+RUN apk add --no-cache \
 #    for compiling. only used for sodium-native at the moment.
 #    this makes the image quite large but native sodium sounds better than js sodium :'(
     build-base python3 \
