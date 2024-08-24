@@ -4,7 +4,8 @@
 [![TypeScript version][ts-badge]][typescript-5-4]
 [![Node.js version][nodejs-badge]][nodejs]
 [![GPLv3+][license-badge]][license]
-[![Build Status - GitHub Actions][gha-badge]][gha-ci]
+[![Build Status - GitHub Actions][gha-ci-badge]][gha-ci]
+[![Docker Hub Status - GitHub Actions][gha-dockerhub-badge]][gha-dockerhub]
 
 A pretty ok music bot.
 
@@ -132,8 +133,10 @@ Licensed under the GNU GENERAL PUBLIC LICENSE. See the [LICENSE](https://github.
 [ts-badge]: https://img.shields.io/badge/TypeScript-5.4-blue.svg
 [nodejs-badge]: https://img.shields.io/badge/Node.js->=%2020.9-blue.svg
 [nodejs]: https://nodejs.org/dist/latest-v20.x/docs/api/
-[gha-badge]: https://github.com/floticerus/drbot/actions/workflows/nodejs.yaml/badge.svg
+[gha-ci-badge]: https://github.com/floticerus/drbot/actions/workflows/nodejs.yaml/badge.svg
 [gha-ci]: https://github.com/floticerus/drbot/actions/workflows/nodejs.yaml
+[gha-dockerhub-badge]: https://github.com/floticerus/drbot/actions/workflows/dockerhub.yaml/badge.svg
+[gha-dockerhub]: https://github.com/floticerus/drbot/actions/workflows/dockerhub.yaml
 [typescript]: https://www.typescriptlang.org/
 [typescript-5-4]: https://devblogs.microsoft.com/typescript/announcing-typescript-5-4/
 [license-badge]: https://img.shields.io/badge/license-GPLv3+-blue.svg
