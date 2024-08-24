@@ -8,3 +8,5 @@ services:
     build:
       context: ./bot
       dockerfile: ./Dockerfile
+    depends_on:
+      - redis
