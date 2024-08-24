@@ -21,6 +21,8 @@ COPY ./ .
 RUN npm run build:release
 
 # runtime container
+# note we could make this smaller by using `FROM alpine` and generating a single executable app above.
+# i'm not sure how feasible a `FROM scratch` container would be here, because of ffmpeg.
 FROM node:20-alpine
 WORKDIR /drbot
 
