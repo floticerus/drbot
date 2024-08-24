@@ -43,13 +43,53 @@ sudo docker compose --file build.yaml up --build
 
 A Redis container with Redisearch is included in the default `compose.yaml` and `build.yaml`. If you prefer to use your own, remove it and provide your own `REDIS_URL` environment variable.
 
+-----
+
 ### Without docker
 
 You can run the bot without docker, it lives in the `/bot` folder.
 
+#### Installation
+
+```shell
+npm ci
+```
+
+#### Building
+
+To build for the current environment:
+```shell
+npm run build
+```
+
+To watch for changes:
+```shell
+npm run build:watch
+```
+
+A release specific build, without js map files, etc:
+```shell
+npm run build:release
+```
+
+#### Configuring
+
+Environment variables are used to configure the bot.
+
+Copy `bot/example.env` to `bot/.env`, and fill in your own values.
+
+Note that `bot/.env` gets a `REDIS_URL` variable, while the docker specific `.env` file does not. This is because the docker compose setup creates its own Redis instance.
+
+#### Starting
+
+To start the bot:
+```shell
+npm run start
+```
+
 #### Redis
 
-You'll have to provide your own Redis server with Redisearch installed. Pass the url with the `REDIS_URL` environment variable.
+If you're not using docker, you'll have to provide your own Redis server with Redisearch installed. Pass the url with the `REDIS_URL` environment variable.
 
 ### Environment variables
 
@@ -76,6 +116,9 @@ WATCH_MEDIA=true
 
 # how many files can we access at once - helps prevent crashes on large libraries and not-great hardware
 DISK_ACCESS_CONCURRENCY=50
+
+# FOR NON-DOCKER/DIRECT NODEJS - url pointing to a redis server
+REDIS_URL=redis://some.redis.server:6379
 ```
 
 ## Backers & Sponsors
