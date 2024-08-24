@@ -1,4 +1,4 @@
-import { access } from 'node:fs/promises'
+import { access, constants } from 'node:fs/promises'
 import redisClient from '~/bot/db/index.js'
 import { scanMediaQueue } from '~/bot/queues/index.js'
 import { events } from '~/bot/events/index.js'
@@ -24,7 +24,7 @@ export const pruneIndex = async (): Promise<void> => {
       await scanMediaQueue.add(async () => {
         let hasAccess: boolean
         try {
-          await access(path.toString())
+          await access(path.toString(), constants.R_OK)
           hasAccess = true
         } catch (_err) {
           hasAccess = false
