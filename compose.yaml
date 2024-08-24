@@ -2,18 +2,7 @@ include:
   - redis.yaml
 services:
   drbot:
+    extends:
+      file: drbot.yaml
+      service: drbot
     image: kmvf/drbot:latest
-    container_name: drbot
-    restart: unless-stopped
-    read_only: true
-    volumes:
-      - ${MEDIA_PATH}:/mnt/media:ro
-    environment:
-      - DISCORD_OWNER=${DISCORD_OWNER}
-      - DISCORD_APPLICATION_ID=${DISCORD_APPLICATION_ID}
-      - DISCORD_TOKEN=${DISCORD_TOKEN}
-      - MEDIA_PATH=/mnt/media
-      - REDIS_URL=redis://redis:6379
-      - SCAN_MEDIA_ON_START=${SCAN_MEDIA_ON_START}
-      - WATCH_MEDIA=${WATCH_MEDIA}
-      - DISK_ACCESS_CONCURRENCY=${DISK_ACCESS_CONCURRENCY}
