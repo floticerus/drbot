@@ -12,7 +12,7 @@ COPY ./package*.json ./
 ENV NODE_ENV="production"
 
 # install npm modules with `npm ci`. package-lock.json is required for this.
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --no-audit
 
 # copy the entire app
 COPY ./ .
