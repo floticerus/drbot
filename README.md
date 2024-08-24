@@ -132,8 +132,8 @@ Licensed under the GNU GENERAL PUBLIC LICENSE. See the [LICENSE](https://github.
 [ts-badge]: https://img.shields.io/badge/TypeScript-5.4-blue.svg
 [nodejs-badge]: https://img.shields.io/badge/Node.js->=%2020.9-blue.svg
 [nodejs]: https://nodejs.org/dist/latest-v20.x/docs/api/
-[gha-badge]: https://github.com/floticerus/drbot/actions/workflows/nodejs.yml/badge.svg
-[gha-ci]: https://github.com/floticerus/drbot/actions/workflows/nodejs.yml
+[gha-badge]: https://github.com/floticerus/drbot/actions/workflows/nodejs.yaml/badge.svg
+[gha-ci]: https://github.com/floticerus/drbot/actions/workflows/nodejs.yaml
 [typescript]: https://www.typescriptlang.org/
 [typescript-5-4]: https://devblogs.microsoft.com/typescript/announcing-typescript-5-4/
 [license-badge]: https://img.shields.io/badge/license-GPLv3+-blue.svg
