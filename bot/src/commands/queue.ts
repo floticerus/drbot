@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js'
 import type { CommandInfo } from '~/bot/types/types.js'
 import { connections } from '~/bot/discord/voice.js'
-import { getVoiceChannelForInteraction } from '~/bot/util/index.js'
+import { getVoiceChannelForInteraction, pluralize } from '~/bot/util/index.js'
 import { getDisplayStringForMedia } from '~/bot/util/getDisplayStringForMedia.js'
 import formatDuration from 'format-duration'
 
@@ -18,7 +18,7 @@ export default {
 
         if (connection) {
           await interaction.reply(
-            `**Queue**: ${connection.queue.length} track${connection.queue.length === 1 ? '' : 's'} [${formatDuration(
+            `**Queue**: ${connection.queue.length} ${pluralize(connection.queue.length, 'track', 'tracks')}} [${formatDuration(
               connection.queue.reduce((previousValue, currentValue) => {
                 return previousValue + Number(currentValue.duration)
               }, 0) * 1000,
