@@ -4,8 +4,10 @@ import redisClient from '~/bot/db/index.js'
 import { isMediaInfoStored } from '~/bot/types/predicates.js'
 import { connections } from '~/bot/discord/voice.js'
 import { VoiceConnectionState } from '~/bot/discord/VoiceConnectionState.js'
-import { getVoiceChannelForInteraction } from '~/bot/util/index.js'
-import { getDisplayStringForMedia } from '~/bot/util/getDisplayStringForMedia.js'
+import {
+  getDisplayStringForMedia,
+  getVoiceChannelForInteraction,
+} from '~/bot/util/index.js'
 
 export default {
   data: new SlashCommandBuilder()

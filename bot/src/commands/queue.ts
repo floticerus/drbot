@@ -1,8 +1,12 @@
 import { SlashCommandBuilder } from 'discord.js'
 import type { CommandInfo } from '~/bot/types/types.js'
 import { connections } from '~/bot/discord/voice.js'
-import { getVoiceChannelForInteraction, pluralize } from '~/bot/util/index.js'
-import { getDisplayStringForMedia } from '~/bot/util/getDisplayStringForMedia.js'
+import {
+  getDisplayStringForMedia,
+  getSafeNumber,
+  getVoiceChannelForInteraction,
+  pluralize,
+} from '~/bot/util/index.js'
 import formatDuration from 'format-duration'
 
 export default {
@@ -18,9 +22,12 @@ export default {
 
         if (connection) {
           await interaction.reply(
-            `**Queue**: ${connection.queue.length} ${pluralize(connection.queue.length, 'track', 'tracks')}} [${formatDuration(
+            `**Queue**: ${connection.queue.length} ${pluralize(connection.queue.length, 'track', 'tracks')} [${formatDuration(
               connection.queue.reduce((previousValue, currentValue) => {
-                return previousValue + Number(currentValue.duration)
+                // make sure to prevent errors when numbers are invalid.
+                // but, it would probably be good to discard media entries
+                // when their duration is invalid. because idk what happens then.
+                return previousValue + getSafeNumber(currentValue.duration)
               }, 0) * 1000,
             )}]\r\n` +
               connection.queue
