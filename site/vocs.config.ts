@@ -1,16 +1,28 @@
-import { defineConfig } from "vocs";
+import { defineConfig } from 'vocs'
 
 export default defineConfig({
-  title: "drbot",
-  description: "A (local) music bot for discord",
+  title: 'drbot',
+  description: 'A (local) music bot for discord',
   sidebar: [
     {
-      text: "Getting Started",
-      link: "/getting-started",
+      text: 'Getting Started',
+      link: '/getting-started',
     },
     {
-      text: "Example",
-      link: "/example",
+      text: 'Docker',
+      link: '/running-with-docker',
+    },
+    {
+      text: 'Without Docker',
+      link: '/running-without-docker',
+    },
+    {
+      text: 'Usage',
+      link: '/usage',
+    },
+    {
+      text: 'Troubleshooting',
+      link: '/troubleshooting',
     },
   ],
-});
+})

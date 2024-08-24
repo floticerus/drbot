@@ -1,0 +1,111 @@
+# Docker
+
+## Install Docker
+
+With Linux servers, you can use package managers to install `docker` and `docker-compose` (optional) if it isn't included.
+
+For Desktop users, [Docker Desktop](https://www.docker.com/products/docker-desktop/) is the preferred way to get started.
+
+## Docker Compose
+
+The easiest way to run this is using [Docker Compose](https://docs.docker.com/compose/).
+
+A few default compose files exist to get running quickly. In most cases, you'll want to use the
+default `compose.yaml` file with the official images.
+
+## Official images
+
+Official images are hosted at Docker Hub under [kmvf/drbot](https://hub.docker.com/r/kmvf/drbot),
+as long as it's not a financial burden to do so.
+
+Currently images are built for `linux/amd64` and `linux/arm64`.
+
+Default `compose.yaml` file utilizing the latest official image:
+
+```yaml
+include:
+  - redis.yaml
+services:
+  drbot:
+    extends:
+      file: drbot.yaml
+      service: drbot
+    image: kmvf/drbot:latest
+```
+
+To run it:
+
+```shell
+docker compose up
+```
+
+## Building
+
+Another compose file exists to build the `/bot` folder from source, `build.yaml`. This might be useful if
+you're building for architecture other than `linux/amd64` or `linux/arm64`, or a developer.
+
+```yaml
+include:
+  - redis.yaml
+services:
+  drbot:
+    extends:
+      file: drbot.yaml
+      service: drbot
+    build:
+      context: ./bot
+      dockerfile: ./Dockerfile
+```
+
+To run it:
+
+```shell
+docker compose --file build.yaml up --build
+```
+
+## drbot.yaml
+
+This file exists as an "abstract" compose file, which is expected to be extended.
+It does not include `image` or `build` fields, and instead, you can extend it, like above.
+
+```yaml
+services:
+  drbot:
+    container_name: drbot
+    restart: unless-stopped
+    read_only: true
+    volumes:
+      - ${MEDIA_PATH}:/mnt/media:ro
+    environment:
+      - DISCORD_OWNER=${DISCORD_OWNER}
+      - DISCORD_APPLICATION_ID=${DISCORD_APPLICATION_ID}
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - MEDIA_PATH=/mnt/media
+      - REDIS_URL=redis://redis:6379
+      - SCAN_MEDIA_ON_START=${SCAN_MEDIA_ON_START}
+      - WATCH_MEDIA=${WATCH_MEDIA}
+      - DISK_ACCESS_CONCURRENCY=${DISK_ACCESS_CONCURRENCY}
+```
+
+## redis.yaml
+
+This is a Redis container with Redisearch installed. Currently we're using
+[redis/redis-stack-server](https://hub.docker.com/r/redis/redis-stack-server).
+It's used as the internal database for the bot. A local `./data` folder is created
+and used for database persistence.
+
+> Note that this particular setup is optional - you can use your own Redis database,
+> as long as it has Redisearch enabled.
+
+```yaml
+services:
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: redis
+    restart: unless-stopped
+    read_only: true
+    volumes:
+      - ./data:/data
+    environment:
+      REDIS_ARGS: --save 60 1 --loglevel warning
+```
