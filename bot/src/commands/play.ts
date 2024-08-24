@@ -1,8 +1,4 @@
-import {
-  InteractionReplyOptions,
-  MessagePayload,
-  SlashCommandBuilder,
-} from 'discord.js'
+import { SlashCommandBuilder } from 'discord.js'
 import type { CommandInfo } from '~/bot/types/types.js'
 import redisClient from '~/bot/db/index.js'
 import { isMediaInfoStored } from '~/bot/types/predicates.js'
@@ -51,9 +47,7 @@ export default {
             )
 
             if (documents && documents.length !== 0) {
-              const lines: Array<
-                string | MessagePayload | InteractionReplyOptions
-              > = []
+              const lines: Array<string> = []
 
               for (const result of documents) {
                 if (isMediaInfoStored(result.value)) {
