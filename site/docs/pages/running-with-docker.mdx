@@ -15,13 +15,11 @@ default `compose.yaml` file with the official images.
 
 ## Official images
 
-Official images are hosted at Docker Hub under [kmvf/drbot](https://hub.docker.com/r/kmvf/drbot),
-as long as it's not a financial burden to do so.
+Official images are hosted at Docker Hub under [kmvf/drbot](https://hub.docker.com/r/kmvf/drbot).
 
-Currently images are built for `linux/amd64` and `linux/arm64`.
+Currently, images are built for `linux/amd64` and `linux/arm64`.
 
 Default `compose.yaml` file utilizing the latest official image:
-
 ```yaml
 include:
   - redis.yaml
@@ -31,10 +29,11 @@ services:
       file: drbot.yaml
       service: drbot
     image: kmvf/drbot:latest
+    depends_on:
+      - redis
 ```
 
 To run it:
-
 ```shell
 docker compose up
 ```
@@ -55,6 +54,8 @@ services:
     build:
       context: ./bot
       dockerfile: ./Dockerfile
+    depends_on:
+      - redis
 ```
 
 To run it:
