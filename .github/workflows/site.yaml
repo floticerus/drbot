@@ -1,6 +1,6 @@
 name: Deploy site to pages
 
-on: [page_build]
+on: [page_build, workflow_dispatch]
 
 jobs:
   build:
