@@ -6,3 +6,5 @@ services:
       file: drbot.yaml
       service: drbot
     image: kmvf/drbot:latest
+    depends_on:
+      - redis
