@@ -14,7 +14,7 @@ events.on(
   ({ duration, numResults }: { duration: number; numResults: number }) => {
     const seconds = duration / 1000
     console.log(
-      `Finished indexing ${numResults} ${pluralize(numResults, 'file', 'files')}} in ${seconds} ${pluralize(seconds, 'second', 'seconds')}`,
+      `Finished indexing ${numResults} ${pluralize(numResults, 'file', 'files')} in ${seconds} ${pluralize(seconds, 'second', 'seconds')}`,
     )
   },
 )

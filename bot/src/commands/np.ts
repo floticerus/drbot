@@ -1,8 +1,10 @@
 import { DiscordAPIError, SlashCommandBuilder } from 'discord.js'
 import type { CommandInfo, MediaInfoStored } from '~/bot/types/types.js'
 import { connections } from '~/bot/discord/voice.js'
-import { getVoiceChannelForInteraction } from '~/bot/util/index.js'
-import { getDisplayStringForMedia } from '~/bot/util/getDisplayStringForMedia.js'
+import {
+  getDisplayStringForMedia,
+  getVoiceChannelForInteraction,
+} from '~/bot/util/index.js'
 
 export default {
   data: new SlashCommandBuilder()
