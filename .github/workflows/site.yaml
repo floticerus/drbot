@@ -1,6 +1,10 @@
 name: Deploy site to pages
 
-on: [page_build, workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: 
 
 jobs:
   build:
