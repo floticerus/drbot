@@ -1,3 +1,5 @@
+include:
+  - redis.yaml
 services:
   drbot:
     image: kmvf/drbot:latest
@@ -15,8 +17,3 @@ services:
       - SCAN_MEDIA_ON_START=${SCAN_MEDIA_ON_START}
       - WATCH_MEDIA=${WATCH_MEDIA}
       - DISK_ACCESS_CONCURRENCY=${DISK_ACCESS_CONCURRENCY}
-  
-  redis:
-    extends:
-      file: redis.yaml
-      service: redis
