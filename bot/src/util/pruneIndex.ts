@@ -2,6 +2,7 @@ import { access, constants } from 'node:fs/promises'
 import redisClient from '~/bot/db/index.js'
 import { scanMediaQueue } from '~/bot/queues/index.js'
 import { events } from '~/bot/events/index.js'
+import { parseFile } from 'music-metadata'
 
 /**
  * removes entries from db if we no longer have access
@@ -20,12 +21,14 @@ export const pruneIndex = async (): Promise<void> => {
   let numDeleted = 0
 
   await Promise.all(
-    documents.map(async ({ id, value: { path } }) => {
+    documents.map(async ({ id, value: { path: _path } }) => {
       await scanMediaQueue.add(async () => {
+        const path = _path.toString()
         let hasAccess: boolean
         try {
-          await access(path.toString(), constants.R_OK)
-          hasAccess = true
+          await access(path, constants.R_OK)
+          const result = await parseFile(path)
+          hasAccess = !!result?.format?.duration
         } catch (_err) {
           hasAccess = false
         }
