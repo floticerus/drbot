@@ -4,10 +4,11 @@ import {
 } from 'discord.js'
 import {
   AudioPlayer,
-  VoiceConnection,
   createAudioPlayer,
   createAudioResource,
   joinVoiceChannel,
+  NoSubscriberBehavior,
+  VoiceConnection,
 } from '@discordjs/voice'
 import type { MediaInfoStored } from '~/bot/types/types.js'
 import { EventEmitter } from 'node:events'
@@ -30,11 +31,14 @@ export class VoiceConnectionState extends EventEmitter {
     this.channelId = channelId
     this.guildId = guildId
     this.adapterCreator = adapterCreator
+    this._boundPlayNext = this.playNextOrStop.bind(this)
   }
 
   public readonly channelId: string
   public readonly guildId: string
   public readonly adapterCreator: InternalDiscordGatewayAdapterCreator
+
+  protected _boundPlayNext?: () => Promise<void>
 
   protected _connection?: VoiceConnection
   public get connection(): VoiceConnection {
@@ -84,11 +88,28 @@ export class VoiceConnectionState extends EventEmitter {
       channelId: this.channelId,
       adapterCreator: this.adapterCreator,
     })
-
     this._connection.once('disconnected', async () => {
       // specify that we don't need to destroy the connection, because it's already being destroyed
       await this.stop({ destroyConnection: false })
     })
+
+    this._player = createAudioPlayer({
+      behaviors: {
+        maxMissedFrames: 1000,
+        // specify noSubscriber behaviour so the player doesn't spam stop while loading.
+        // not sure why this is even needed tbh.
+        noSubscriber: NoSubscriberBehavior.Pause,
+      },
+    })
+    this._player.on('stateChange', ({ status }) => {
+      this._paused = status === 'paused'
+      this._connection.setSpeaking(status === 'playing')
+    })
+    this._player.on('error', async (err) => {
+      console.error('PLAYER ERROR', err)
+      // await this.playNextOrStop()
+    })
+    this._connection.subscribe(this._player)
 
     this.emit('start', { channelId: this.channelId })
   }
@@ -120,8 +141,6 @@ export class VoiceConnectionState extends EventEmitter {
   play(media: MediaInfoStored): void {
     this._nowPlaying = media
     this.emit('nowplaying', { media })
-    this._player = createAudioPlayer({})
-    this._connection.subscribe(this._player)
     const resource = createAudioResource(media.path, {
       metadata: {
         path: media.path,
@@ -130,16 +149,14 @@ export class VoiceConnectionState extends EventEmitter {
         title: media.title ?? media.filename ?? 'Unknown',
       },
     })
-    this._player.once('error', async (err) => {
-      console.error(err)
-      await this.playNextOrStop()
-    })
-    this._player.once('idle', async () => {
-      await this.playNextOrStop()
-    })
-    this._player.on('stateChange', ({ status }) => {
-      this._paused = status === 'paused'
-      this._connection.setSpeaking(status === 'playing')
+    // this part looks a little messy but i was having trouble with
+    // the player getting stuck in a stop/play loop during initial play.
+    // it could probably be cleaned up, as i think it was mainly the
+    // noSubscriber behaviour setting that fixed this problem.
+    this._player.off('idle', this._boundPlayNext)
+    this._player.stop()
+    this._player.once('playing', () => {
+      this._player.once('idle', this._boundPlayNext)
     })
     this._player.play(resource)
   }
