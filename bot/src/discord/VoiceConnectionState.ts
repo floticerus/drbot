@@ -100,7 +100,13 @@ export class VoiceConnectionState extends EventEmitter {
         // goes idle, which causes it to skip to the next track.
         // possibly exacerbated by cpu load? unsure.
         noSubscriber: NoSubscriberBehavior.Play,
+        // both of these options seem to cause big problems and aren't respected by
+        // the discord.js module or something, idk. seems wacky AF.
+        // set it to infinity to make it fuck off, hopefully.
+        maxMissedFrames: Infinity,
       },
+      // not even sure what this does. nothing from the looks of it.
+      debug: true,
     })
     this._player.on('stateChange', ({ status }) => {
       this._paused = status === 'paused'
@@ -142,7 +148,7 @@ export class VoiceConnectionState extends EventEmitter {
     return position
   }
 
-  play(media: MediaInfoStored): void {
+  async play(media: MediaInfoStored): Promise<void> {
     this._nowPlaying = media
     const resource = createAudioResource(media.path, {
       metadata: {
@@ -152,26 +158,41 @@ export class VoiceConnectionState extends EventEmitter {
         title: media.title ?? media.filename ?? 'Unknown',
       },
     })
-    // this part looks a little messy but i was having trouble with
-    // the player getting stuck in a stop/play loop during initial play.
-    // it could probably be cleaned up, as i think it was mainly the
-    // noSubscriber behaviour setting that fixed this problem.
+    // this part looks a little messy but i'm having big problems
+    // with the player immediately going into 'idle' state and causing
+    // it to get stuck in a loop of play/idle/play/idle/etc.
+    // attempt to make things as safe as possible and easy to debug here.
+    // still not working! kind of infuriating! why does this happen???
     this._player.off('idle', this._boundPlayNext)
     this._player.stop()
-    this._player.once('playing', () => {
-      this._nowPlaying = media
-      this.emit('nowplaying', { media })
-      console.log('Playing:', media.filename)
-      this._player.once('idle', this._boundPlayNext)
-    })
-    this._player.play(resource)
+    if (this._player.state.status === 'idle') {
+      this._player.once('playing', () => {
+        this._nowPlaying = media
+        this.emit('nowplaying', { media })
+        console.log('Playing:', media.filename)
+        this._player.once('idle', this._boundPlayNext)
+      })
+
+      this._player.play(resource)
+    } else {
+      this._player.once('idle', () => {
+        this._player.once('playing', () => {
+          this._nowPlaying = media
+          this.emit('nowplaying', { media })
+          console.log('Playing:', media.filename)
+          this._player.once('idle', this._boundPlayNext)
+        })
+
+        this._player.play(resource)
+      })
+    }
   }
 
   async playNextOrStop(): Promise<void> {
     const mediaInfo = this._queue.shift()
 
     if (mediaInfo) {
-      this.play(mediaInfo)
+      await this.play(mediaInfo)
     } else {
       await this.stop()
     }
