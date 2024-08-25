@@ -1,4 +1,3 @@
-import { access, constants } from 'node:fs/promises'
 import redisClient from '~/bot/db/index.js'
 import { scanMediaQueue } from '~/bot/queues/index.js'
 import { events } from '~/bot/events/index.js'
@@ -26,7 +25,6 @@ export const pruneIndex = async (): Promise<void> => {
         const path = _path.toString()
         let hasAccess: boolean
         try {
-          await access(path, constants.R_OK)
           const result = await parseFile(path)
           hasAccess = !!result?.format?.duration
         } catch (_err) {
