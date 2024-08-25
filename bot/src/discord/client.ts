@@ -45,6 +45,6 @@ client.on('interactionCreate', async (interaction) => {
   }
 })
 
-await client.login(process.env.DISCORD_TOKEN)
+client.login(process.env.DISCORD_TOKEN).catch(console.error)
 
 export default client

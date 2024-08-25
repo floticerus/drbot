@@ -1,4 +1,5 @@
 import 'dotenv/config'
+console.log('process.env', JSON.stringify(process.env))
 import 'web-streams-polyfill/polyfill'
 import '~/bot/discord/commands.setup.js'
 import '~/bot/discord/client.js'
@@ -17,4 +18,4 @@ if (boolean(process.env.WATCH_MEDIA ?? true)) {
   startupFunctions.push(watchForMedia())
 }
 
-await Promise.all(startupFunctions)
+Promise.all(startupFunctions).catch(console.error)
