@@ -95,7 +95,9 @@ export class VoiceConnectionState extends EventEmitter {
 
     this._player = createAudioPlayer({
       behaviors: {
-        maxMissedFrames: 1000,
+        // this setting seems to be a problem that causes play/stop loops.
+        // just ignore it by setting Infinity? skip manually? idk.
+        maxMissedFrames: Infinity,
         // specify noSubscriber behaviour so the player doesn't spam stop while loading.
         // not sure why this is even needed tbh.
         noSubscriber: NoSubscriberBehavior.Pause,
