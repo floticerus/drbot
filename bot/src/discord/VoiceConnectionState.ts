@@ -95,12 +95,11 @@ export class VoiceConnectionState extends EventEmitter {
 
     this._player = createAudioPlayer({
       behaviors: {
-        // this setting seems to be a problem that causes play/stop loops.
-        // just ignore it by setting Infinity? skip manually? idk.
-        maxMissedFrames: Infinity,
-        // specify noSubscriber behaviour so the player doesn't spam stop while loading.
-        // not sure why this is even needed tbh.
-        noSubscriber: NoSubscriberBehavior.Pause,
+        // this noSubscriber behaviour seems very wonky. not sure why it's needed.
+        // sometimes gets stuck in play/idle loop, where a playing track immediately
+        // goes idle, which causes it to skip to the next track.
+        // possibly exacerbated by cpu load? unsure.
+        noSubscriber: NoSubscriberBehavior.Play,
       },
     })
     this._player.on('stateChange', ({ status }) => {
@@ -123,8 +122,11 @@ export class VoiceConnectionState extends EventEmitter {
     const { connections } = await import('./voice.js')
     this._nowPlaying = undefined
     this._queue = []
-    this._player?.stop(true)
-    destroyConnection && this._connection?.destroy()
+    if (destroyConnection && this._connection) {
+      this._connection.destroy()
+    } else {
+      this._player?.stop(true)
+    }
     const { channelId } = this
     delete connections[channelId]
     this.emit('stop', { channelId })
@@ -142,7 +144,6 @@ export class VoiceConnectionState extends EventEmitter {
 
   play(media: MediaInfoStored): void {
     this._nowPlaying = media
-    this.emit('nowplaying', { media })
     const resource = createAudioResource(media.path, {
       metadata: {
         path: media.path,
@@ -158,6 +159,9 @@ export class VoiceConnectionState extends EventEmitter {
     this._player.off('idle', this._boundPlayNext)
     this._player.stop()
     this._player.once('playing', () => {
+      this._nowPlaying = media
+      this.emit('nowplaying', { media })
+      console.log('Playing:', media.filename)
       this._player.once('idle', this._boundPlayNext)
     })
     this._player.play(resource)
