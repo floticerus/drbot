@@ -14,7 +14,11 @@ events.on(
   ({ duration, numResults }: { duration: number; numResults: number }) => {
     const seconds = duration / 1000
     console.log(
-      `Finished indexing ${numResults} ${pluralize(numResults, 'file', 'files')} in ${seconds} ${pluralize(seconds, 'second', 'seconds')}`,
+      `Finished indexing ${numResults} ${pluralize(
+        numResults,
+        'file',
+        'files',
+      )} in ${seconds} ${pluralize(seconds, 'second', 'seconds')}`,
     )
   },
 )
@@ -24,7 +28,11 @@ events.on(
   ({ duration, numDeleted }: { duration: number; numDeleted: number }) => {
     const seconds = duration / 1000
     console.log(
-      `Pruning removed ${numDeleted ? '~' : ''}${numDeleted} media ${pluralize(numDeleted, 'entry', 'entries')} in ${seconds} ${pluralize(seconds, 'second', 'seconds')}}`,
+      `Pruning removed ${numDeleted ? '~' : ''}${numDeleted} media ${pluralize(
+        numDeleted,
+        'entry',
+        'entries',
+      )} in ${seconds} ${pluralize(seconds, 'second', 'seconds')}`,
     )
   },
 )
