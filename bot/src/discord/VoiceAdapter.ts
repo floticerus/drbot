@@ -78,6 +78,20 @@ export class VoiceAdapter extends EventEmitter {
     })
   }
 
+  static async playOnChannel(
+    voiceChannel: VoiceBasedChannel,
+    media: MediaInfoStored,
+  ): Promise<{ status: 'played' | 'queued'; index: number }> {
+    const { connections } = await import('./voice.js')
+    if (connections[voiceChannel.id]) {
+      const index = await connections[voiceChannel.id].addToQueue(media)
+      return { status: 'queued', index }
+    }
+    await VoiceAdapter.fromVoiceChannel(voiceChannel).start()
+    connections[voiceChannel.id].play(media)
+    return { status: 'played', index: 0 }
+  }
+
   /**
    *
    */

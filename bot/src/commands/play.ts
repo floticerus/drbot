@@ -53,19 +53,28 @@ export default {
 
               for (const result of documents) {
                 if (isMediaInfoStored(result.value)) {
-                  if (!connections[voiceChannel.id]) {
-                    await VoiceAdapter.fromVoiceChannel(voiceChannel).start()
-                    connections[voiceChannel.id].play(result.value)
-                    lines.push(
-                      `**Playing**: ${getDisplayStringForMedia(result.value)}`,
-                    )
-                  } else {
-                    const index = await connections[voiceChannel.id].addToQueue(
-                      result.value,
-                    )
-                    lines.push(
-                      `**Queued**: ${getDisplayStringForMedia(connections[voiceChannel.id].queue[index])}`,
-                    )
+                  const { status, index } = await VoiceAdapter.playOnChannel(
+                    voiceChannel,
+                    result.value,
+                  )
+
+                  switch (status) {
+                    case 'queued':
+                      lines.push(
+                        `**Queued**: ${getDisplayStringForMedia(connections[voiceChannel.id].queue[index])}`,
+                      )
+                      break
+                    case 'played':
+                      lines.push(
+                        `**Playing**: ${getDisplayStringForMedia(result.value)}`,
+                      )
+                      break
+                    default:
+                      console.error(
+                        'VoiceAdapter.playOnChannel() responded with invalid status:',
+                        status,
+                      )
+                      break
                   }
                 } else {
                   lines.push('Invalid MediaInfo response 🤯')
