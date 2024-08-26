@@ -3,7 +3,6 @@
 export { default as clear } from './clear.js'
 export { default as np } from './np.js'
 export { default as pause } from './pause.js'
-export { default as ping } from './ping.js'
 export { default as play } from './play.js'
 export { default as playall } from './playall.js'
 export { default as queue } from './queue.js'

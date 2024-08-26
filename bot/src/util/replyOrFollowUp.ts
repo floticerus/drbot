@@ -1,18 +1,20 @@
 import {
   Interaction,
   InteractionReplyOptions,
+  InteractionResponse,
+  Message,
   MessagePayload,
 } from 'discord.js'
 
 export const replyOrFollowUp = async (
   interaction: Interaction,
   options: string | MessagePayload | InteractionReplyOptions,
-): Promise<void> => {
+): Promise<InteractionResponse | Message> => {
   if (interaction.isRepliable()) {
     if (interaction.replied || interaction.deferred) {
-      await interaction.followUp(options)
+      return await interaction.followUp(options)
     } else {
-      await interaction.reply(options)
+      return await interaction.reply(options)
     }
   } else {
     throw new Error('NOT_REPLIABLE')

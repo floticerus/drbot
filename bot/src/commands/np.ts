@@ -2,6 +2,7 @@ import { DiscordAPIError, SlashCommandBuilder } from 'discord.js'
 import type { CommandInfo, MediaInfoStored } from '~/bot/types/types.js'
 import { connections } from '~/bot/discord/voice.js'
 import {
+  deleteMessageAfterTimeout,
   getDisplayStringForMedia,
   getVoiceChannelForInteraction,
 } from '~/bot/util/index.js'
@@ -56,6 +57,17 @@ export default {
             }
 
             connection.on('nowplaying', onNowPlaying)
+
+            deleteMessageAfterTimeout({
+              message: response,
+              onDeleted: () => {
+                connection?.off('nowplaying', onNowPlaying)
+              },
+              onError: (err) => {
+                console.error(err)
+                connection?.off('nowplaying', onNowPlaying)
+              },
+            })
           } else {
             await interaction.reply({
               content: 'Not playing 😿',

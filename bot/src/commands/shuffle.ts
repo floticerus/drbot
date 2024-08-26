@@ -1,7 +1,8 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { InteractionResponse, SlashCommandBuilder } from 'discord.js'
 import type { CommandInfo } from '~/bot/types/types.js'
 import { connections } from '~/bot/discord/voice.js'
 import {
+  deleteMessageAfterTimeout,
   getVoiceChannelForInteraction,
   mapNumber,
   randomizeString,
@@ -19,6 +20,7 @@ export default {
     .setDescription('Shuffles the queue'),
   async execute(interaction): Promise<void> {
     const voice = await getVoiceChannelForInteraction(interaction)
+    let response: InteractionResponse | undefined = undefined
 
     if (voice) {
       const connection = connections[voice.id]
@@ -27,7 +29,7 @@ export default {
         connection.shuffle()
 
         if (interaction.isRepliable()) {
-          const response = await interaction.reply(
+          response = await interaction.reply(
             randomizeString(shuffledResponse, {
               randomizeCharactersChance: shuffleRandomizeCharMax,
             }),
@@ -60,11 +62,15 @@ export default {
       }
     } else {
       if (interaction.isRepliable()) {
-        await interaction.reply({
+        response = await interaction.reply({
           content: 'Must be in a voice channel to use this command',
           ephemeral: true,
         })
       }
+    }
+
+    if (response) {
+      deleteMessageAfterTimeout({ message: response })
     }
   },
 } satisfies CommandInfo

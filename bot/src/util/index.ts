@@ -1,4 +1,5 @@
 export * from './buildIndex.js'
+export * from './deleteMessageAfterTimeout.js'
 export * from './findMediaAtPath.js'
 export * from './findMediaInFolder.js'
 export * from './getDisplayStringForMedia.js'
