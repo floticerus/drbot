@@ -3,7 +3,7 @@ import type { CommandInfo } from '~/bot/types/types.js'
 import redisClient from '~/bot/db/index.js'
 import { isMediaInfoStored } from '~/bot/types/predicates.js'
 import { connections } from '~/bot/discord/voice.js'
-import { VoiceConnectionState } from '~/bot/discord/VoiceConnectionState.js'
+import { VoiceAdapter } from '~/bot/discord/VoiceAdapter.js'
 import {
   getDisplayStringForMedia,
   getVoiceChannelForInteraction,
@@ -54,9 +54,7 @@ export default {
               for (const result of documents) {
                 if (isMediaInfoStored(result.value)) {
                   if (!connections[voiceChannel.id]) {
-                    await VoiceConnectionState.fromVoiceChannel(
-                      voiceChannel,
-                    ).start()
+                    await VoiceAdapter.fromVoiceChannel(voiceChannel).start()
                     connections[voiceChannel.id].play(result.value)
                     lines.push(
                       `**Playing**: ${getDisplayStringForMedia(result.value)}`,

@@ -1,3 +1,3 @@
-import { VoiceConnectionState } from '~/bot/discord/VoiceConnectionState.js'
+import { VoiceAdapter } from '~/bot/discord/VoiceAdapter.js'
 
-export const connections: Record<string, VoiceConnectionState> = {}
+export const connections: Record<string, VoiceAdapter> = {}

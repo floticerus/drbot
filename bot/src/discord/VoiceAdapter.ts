@@ -14,18 +14,14 @@ import type { MediaInfoStored } from '~/bot/types/types.js'
 import { EventEmitter } from 'node:events'
 import { shuffleInPlace } from '~/bot/util/index.js'
 
-export type VoiceConnectionStateOptions = {
+export type VoiceAdapterOptions = {
   readonly channelId: string
   readonly guildId: string
   readonly adapterCreator: InternalDiscordGatewayAdapterCreator
 }
 
-export class VoiceConnectionState extends EventEmitter {
-  constructor({
-    channelId,
-    guildId,
-    adapterCreator,
-  }: VoiceConnectionStateOptions) {
+export class VoiceAdapter extends EventEmitter {
+  constructor({ channelId, guildId, adapterCreator }: VoiceAdapterOptions) {
     super()
     this.setMaxListeners(100)
     this.channelId = channelId
@@ -65,19 +61,30 @@ export class VoiceConnectionState extends EventEmitter {
     return this._paused
   }
 
+  /**
+   *
+   * @param channelId
+   * @param guildId
+   * @param adapterCreator
+   */
   static fromVoiceChannel({
     id: channelId,
     guild: { id: guildId, voiceAdapterCreator: adapterCreator },
-  }: VoiceBasedChannel): VoiceConnectionState {
-    return new VoiceConnectionState({
+  }: VoiceBasedChannel): VoiceAdapter {
+    return new VoiceAdapter({
       channelId,
       guildId,
       adapterCreator,
     })
   }
 
+  /**
+   *
+   */
   async start(): Promise<void> {
-    // we're importing this way to avoid circular deps
+    // we're importing this way to avoid circular deps.
+    // it's currently the only reason this function is async,
+    // which is unfortunate.
     const { connections } = await import('./voice.js')
     if (connections[this.channelId]) {
       throw new Error('ALREADY_EXISTS')
@@ -121,10 +128,16 @@ export class VoiceConnectionState extends EventEmitter {
     this.emit('start', { channelId: this.channelId })
   }
 
+  /**
+   *
+   * @param destroyConnection
+   */
   async stop({
     destroyConnection = true,
   }: { destroyConnection?: boolean } = {}): Promise<void> {
-    // we're importing this way to avoid circular deps
+    // we're importing this way to avoid circular deps.
+    // it's currently the only reason this function is async,
+    // which is unfortunate.
     const { connections } = await import('./voice.js')
     this._nowPlaying = undefined
     this._queue = []
@@ -138,6 +151,14 @@ export class VoiceConnectionState extends EventEmitter {
     this.emit('stop', { channelId })
   }
 
+  /**
+   * adds `MediaInfoStored` data to the queue.
+   * if nothing is playing, it gets played immediately.
+   *
+   * @param media
+   * @returns a `Promise` which resolves with the index of `media` in the queue.
+   *          resolves with `-1` if the queue is empty, resulting in immediate playback.
+   */
   async addToQueue(media: MediaInfoStored): Promise<number> {
     const position = this._queue.push(media) - 1
     this.emit('queued', { position, media })
@@ -148,9 +169,18 @@ export class VoiceConnectionState extends EventEmitter {
     return position
   }
 
-  async play(media: MediaInfoStored): Promise<void> {
+  /**
+   * plays `MediaInfoStored` data over the voice channel.
+   *
+   * @param media
+   */
+  play(media: MediaInfoStored): void {
+    // make note of the nowPlaying value now, however due to the
+    // async nature it could get overwritten after playback begins.
     this._nowPlaying = media
+    // create the audio resource
     const resource = createAudioResource(media.path, {
+      // make note of some metadata, but we're not even using this anywhere.
       metadata: {
         path: media.path,
         album: media.album ?? 'Unknown album',
@@ -161,55 +191,57 @@ export class VoiceConnectionState extends EventEmitter {
     // this part looks a little messy but i'm having big problems
     // with the player immediately going into 'idle' state and causing
     // it to get stuck in a loop of play/idle/play/idle/etc.
-    // attempt to make things as safe as possible and easy to debug here.
-    // still not working! kind of infuriating! why does this happen???
+    // UPDATE: it turns out, this was caused by the index getting
+    // duplicates and some files being unplayable. attempted to
+    // make the index pruning more aggressive to solve, but this
+    // part should do something more obvious when it detects problems.
     this._player.off('idle', this._boundPlayNext)
+    // .stop() probably isn't necessary, but it doesn't seem to hurt anything.
     this._player.stop()
-    if (this._player.state.status === 'idle') {
-      this._player.once('playing', () => {
-        this._nowPlaying = media
-        this.emit('nowplaying', { media })
-        console.log('Playing:', media.filename)
-        this._player.once('idle', this._boundPlayNext)
-      })
-
-      this._player.play(resource)
-    } else {
-      this._player.once('idle', () => {
-        this._player.once('playing', () => {
-          this._nowPlaying = media
-          this.emit('nowplaying', { media })
-          console.log('Playing:', media.filename)
-          this._player.once('idle', this._boundPlayNext)
-        })
-
-        this._player.play(resource)
-      })
-    }
+    // listen for the `playing` event one time
+    this._player.once('playing', () => {
+      // make sure we know which media is playing currently
+      this._nowPlaying = media
+      // send out a `nowplaying` event with the media
+      this.emit('nowplaying', { media })
+      // when the audio player goes idle, attempt to play the next queued track
+      this._player.once('idle', this._boundPlayNext)
+    })
+    // play the new audio resource after events are set up
+    this._player.play(resource)
   }
 
+  /**
+   * either plays the next track in the queue, or stops the connection if the queue is empty.
+   * this is used when a track ends or is skipped.
+   */
   async playNextOrStop(): Promise<void> {
     const mediaInfo = this._queue.shift()
 
     if (mediaInfo) {
-      await this.play(mediaInfo)
+      this.play(mediaInfo)
     } else {
       await this.stop()
     }
   }
 
+  /**
+   * pauses playback
+   */
   pause(): void {
-    if (this._player) {
-      this._player.pause(true)
-    }
+    this._player?.pause(true)
   }
 
-  resume(): void {
-    if (this._player) {
-      this._player.unpause()
-    }
+  /**
+   * resumes playback when paused
+   */
+  unpause(): void {
+    this._player?.unpause()
   }
 
+  /**
+   * shuffles the queue
+   */
   shuffle(): void {
     shuffleInPlace(this._queue)
   }
