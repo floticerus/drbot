@@ -8,7 +8,7 @@
 [![Build Status - GitHub Actions][gha-ci-badge]][gha-ci]
 [![Docker Hub Status - GitHub Actions][gha-dockerhub-badge]][gha-dockerhub]
 
-A pretty ok music bot.
+A (local) music bot for discord.
 
 ## Getting Started
 
