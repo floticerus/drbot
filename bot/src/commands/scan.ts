@@ -17,17 +17,23 @@ export default {
     if (interaction.isRepliable()) {
       response = await replyOrFollowUp(
         interaction,
-        'Scanning library... hang on 📚',
+        'Scanning library... hang on 🕵️',
       )
     }
 
     await buildIndex()
 
     if (interaction.isRepliable()) {
-      response = await replyOrFollowUp(
-        interaction,
-        `Finished scanning library in **${(Date.now() - startTime) / 1000} seconds** 🎉`,
-      )
+      deleteMessageAfterTimeout({
+        message: await replyOrFollowUp(
+          interaction,
+          `Finished scanning library in **${(Date.now() - startTime) / 1000} seconds** 🎉`,
+        ),
+      })
+
+      if (response) {
+        await response.delete()
+      }
     }
 
     if (response) {

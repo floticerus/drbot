@@ -5,6 +5,7 @@ import { isMediaInfoStored } from '~/bot/types/predicates.js'
 import { connections } from '~/bot/discord/voice.js'
 import { VoiceAdapter } from '~/bot/discord/VoiceAdapter.js'
 import {
+  deleteMessageAfterTimeout,
   getDisplayStringForMedia,
   getVoiceChannelForInteraction,
 } from '~/bot/util/index.js'
@@ -81,26 +82,35 @@ export default {
                 }
               }
 
+              // don't delete this message?
               await interaction.reply(
                 `${lines.join('\n').substring(0, 420)}...`,
               )
             } else {
               // don't use an ephemeral reply here - it might be nice for everyone to see what didn't work
-              await interaction.reply(`No results for query: **${query}**`)
+              deleteMessageAfterTimeout({
+                message: await interaction.reply(
+                  `No results for query: **${query}**`,
+                ),
+              })
             }
           } catch (err) {
             console.error(err)
           }
         } else {
-          await interaction.reply({
-            content: 'Voice channel is not joinable 😒',
-            ephemeral: true,
+          deleteMessageAfterTimeout({
+            message: await interaction.reply({
+              content: 'Voice channel is not joinable 😒',
+              ephemeral: true,
+            }),
           })
         }
       } else {
-        await interaction.reply({
-          content: 'Must be in a voice channel to use this command 😱',
-          ephemeral: true,
+        deleteMessageAfterTimeout({
+          message: await interaction.reply({
+            content: 'Must be in a voice channel to use this command 😱',
+            ephemeral: true,
+          }),
         })
       }
     }

@@ -1,5 +1,9 @@
 import {
+  DiscordAPIError,
+  type Interaction,
+  type InteractionResponse,
   type InternalDiscordGatewayAdapterCreator,
+  type Message,
   type VoiceBasedChannel,
 } from 'discord.js'
 import {
@@ -12,7 +16,12 @@ import {
 } from '@discordjs/voice'
 import type { MediaInfoStored } from '~/bot/types/types.js'
 import { EventEmitter } from 'node:events'
-import { shuffleInPlace } from '~/bot/util/index.js'
+import {
+  deleteMessageAfterTimeout,
+  getDisplayStringForMedia,
+  replyOrFollowUp,
+  shuffleInPlace,
+} from '~/bot/util/index.js'
 
 export type VoiceAdapterOptions = {
   readonly channelId: string
@@ -33,6 +42,8 @@ export class VoiceAdapter extends EventEmitter {
   public readonly channelId: string
   public readonly guildId: string
   public readonly adapterCreator: InternalDiscordGatewayAdapterCreator
+
+  protected _npReply?: InteractionResponse | Message
 
   protected _boundPlayNext?: () => Promise<void>
 
@@ -258,5 +269,92 @@ export class VoiceAdapter extends EventEmitter {
    */
   shuffle(): void {
     shuffleInPlace(this._queue)
+  }
+
+  async displayNowPlayingReply(
+    interaction: Interaction,
+  ): Promise<InteractionResponse<boolean> | Message<boolean>> {
+    const previousNpReply = this._npReply
+
+    await Promise.all([
+      (async () => {
+        if (previousNpReply) {
+          try {
+            // this will throw if it can't be deleted - probably expired token
+            await previousNpReply.delete()
+          } catch (err) {
+            console.error(err)
+          }
+        }
+      })(),
+      (async () => {
+        this._npReply = undefined
+
+        if (interaction.isRepliable()) {
+          if (this._nowPlaying) {
+            const response = await replyOrFollowUp(
+              interaction,
+              `**Now Playing**: ${getDisplayStringForMedia(this._nowPlaying)}`,
+            )
+            this._npReply = response
+
+            // perhaps we'll need to unbind this eventually, but for now it's ok i guess?
+            // when the bot leaves voice chat, the connection is destroyed and stops firing events.
+            // maybe if someone else calls `np` - it should unbind the previous call?
+            // strange crash when i had 2 `np` calls running - coincidence or something we need to solve
+            const onNowPlaying = async ({
+              media,
+            }: {
+              media: MediaInfoStored
+            }): Promise<void> => {
+              if (media) {
+                try {
+                  await response.edit(
+                    `**Now Playing**: ${getDisplayStringForMedia(media)}`,
+                  )
+                } catch (err) {
+                  // unsubscribe this event for any error, but don't log specific error codes
+                  if (err instanceof DiscordAPIError) {
+                    switch (err.code) {
+                      case 50027: // Invalid Webhook Token (making requests on old message, ~15m or so)
+                      case 10008: // Unknown Message (probably just an already deleted message? should fix tho...)
+                        break
+                      default:
+                        console.error(err)
+                        break
+                    }
+                  } else {
+                    console.error(err)
+                  }
+
+                  this.off('nowplaying', onNowPlaying)
+                }
+              }
+            }
+
+            this.on('nowplaying', onNowPlaying)
+
+            deleteMessageAfterTimeout({
+              message: response,
+              duration: 1000 * 60 * 10, // 10 minutes
+              onDeleted: () => {
+                this.off('nowplaying', onNowPlaying)
+              },
+              onError: (err) => {
+                console.error(err)
+                this.off('nowplaying', onNowPlaying)
+              },
+            })
+          } else {
+            await replyOrFollowUp(interaction, {
+              content: 'Not playing 😿',
+              ephemeral: true,
+            })
+          }
+        }
+      })(),
+    ])
+
+    return this._npReply
   }
 }
