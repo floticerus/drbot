@@ -336,6 +336,7 @@ export class VoiceAdapter extends EventEmitter {
 
             deleteMessageAfterTimeout({
               message: response,
+              duration: 1000 * 60 * 10, // 10 minutes
               onDeleted: () => {
                 this.off('nowplaying', onNowPlaying)
               },

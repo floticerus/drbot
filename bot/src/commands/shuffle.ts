@@ -1,4 +1,4 @@
-import { InteractionResponse, SlashCommandBuilder } from 'discord.js'
+import { SlashCommandBuilder } from 'discord.js'
 import type { CommandInfo } from '~/bot/types/types.js'
 import { connections } from '~/bot/discord/voice.js'
 import {
@@ -20,8 +20,6 @@ export default {
     .setDescription('Shuffles the queue'),
   async execute(interaction): Promise<void> {
     const voice = await getVoiceChannelForInteraction(interaction)
-    let response: InteractionResponse | undefined = undefined
-
     if (voice) {
       const connection = connections[voice.id]
 
@@ -29,11 +27,12 @@ export default {
         connection.shuffle()
 
         if (interaction.isRepliable()) {
-          response = await interaction.reply(
+          const response = await interaction.reply(
             randomizeString(shuffledResponse, {
               randomizeCharactersChance: shuffleRandomizeCharMax,
             }),
           )
+          deleteMessageAfterTimeout({ message: response })
 
           // add a little character... shuffle the response a few times before settling on the final value
           for (let i = 0; i < shuffleIterations; i++) {
@@ -62,15 +61,13 @@ export default {
       }
     } else {
       if (interaction.isRepliable()) {
-        response = await interaction.reply({
-          content: 'Must be in a voice channel to use this command',
-          ephemeral: true,
+        deleteMessageAfterTimeout({
+          message: await interaction.reply({
+            content: 'Must be in a voice channel to use this command',
+            ephemeral: true,
+          }),
         })
       }
-    }
-
-    if (response) {
-      deleteMessageAfterTimeout({ message: response })
     }
   },
 } satisfies CommandInfo

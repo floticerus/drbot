@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from 'discord.js'
 import type { CommandInfo } from '~/bot/types/types.js'
 import { connections } from '~/bot/discord/voice.js'
 import {
+  deleteMessageAfterTimeout,
   getDisplayStringForMedia,
   getSafeNumber,
   getVoiceChannelForInteraction,
@@ -39,16 +40,20 @@ export default {
                 .join(''),
           )
         } else {
-          await interaction.reply({
-            content: 'Not in voice channel',
-            ephemeral: true,
+          deleteMessageAfterTimeout({
+            message: await interaction.reply({
+              content: 'Not in voice channel',
+              ephemeral: true,
+            }),
           })
         }
       } else {
         if (interaction.isRepliable()) {
-          await interaction.reply({
-            content: 'Must be in a voice channel to use this command 😒',
-            ephemeral: true,
+          deleteMessageAfterTimeout({
+            message: await interaction.reply({
+              content: 'Must be in a voice channel to use this command 😒',
+              ephemeral: true,
+            }),
           })
         }
       }

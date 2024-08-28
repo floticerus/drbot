@@ -13,8 +13,8 @@ export type DeleteMessageAfterTimeoutResponse = {
 
 export const deleteMessageAfterTimeout = ({
   message,
-  // default to 10 minutes - less than the usual discord token lifetime
-  duration = 1000 * 60 * 10,
+  // default to 1 minute - note that the discord token lifetime for updating is around 15 minutes
+  duration = 1000 * 60,
   onDeleted,
   onError = console.error,
 }: DeleteMessageAfterTimeoutOptions): DeleteMessageAfterTimeoutResponse => {
