@@ -3,6 +3,10 @@ import { defineConfig } from 'vocs'
 export default defineConfig({
   title: 'drbot',
   description: 'A (local) music bot for discord',
+  logoUrl: {
+    light: '/images/drbot-sm4_256.png',
+    dark: '/images/drbot-sm4_256.png',
+  },
   sidebar: [
     {
       text: 'Getting Started',
