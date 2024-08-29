@@ -5,6 +5,7 @@ import {
   Message,
   MessagePayload,
 } from 'discord.js'
+import { VoiceConnectionExistsError } from '~/bot/errors/index.js'
 
 export const replyOrFollowUp = async (
   interaction: Interaction,
@@ -17,6 +18,6 @@ export const replyOrFollowUp = async (
       return await interaction.reply(options)
     }
   } else {
-    throw new Error('NOT_REPLIABLE')
+    throw new VoiceConnectionExistsError()
   }
 }

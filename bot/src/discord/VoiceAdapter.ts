@@ -22,6 +22,7 @@ import {
   replyOrFollowUp,
   shuffleInPlace,
 } from '~/bot/util/index.js'
+import { VoiceConnectionExistsError } from '~/bot/errors/index.js'
 
 export type VoiceAdapterOptions = {
   readonly channelId: string
@@ -49,11 +50,44 @@ export class VoiceAdapter extends EventEmitter {
 
   protected _connection?: VoiceConnection
   public get connection(): VoiceConnection {
+    if (!this._connection) {
+      this._connection = joinVoiceChannel({
+        guildId: this.guildId,
+        channelId: this.channelId,
+        adapterCreator: this.adapterCreator,
+      })
+      this._connection.once('disconnected', async () => {
+        // specify that we don't need to destroy the connection, because it's already being destroyed
+        await this.stop({ destroyConnection: false })
+      })
+    }
+
     return this._connection
   }
 
   protected _player?: AudioPlayer
   public get player(): AudioPlayer {
+    if (!this._player) {
+      this._player = createAudioPlayer({
+        behaviors: {
+          // when this is set to stop, the bot immediately leaves the voice channel.
+          // tbh i'm not sure what the purpose of this option is.
+          noSubscriber: NoSubscriberBehavior.Pause,
+        },
+        // not even sure what this does. nothing from the looks of it.
+        debug: false,
+      })
+      this._player.on('stateChange', ({ status }) => {
+        this._paused = status === 'paused'
+        this._connection.setSpeaking(status === 'playing')
+      })
+      this._player.on('error', async (err) => {
+        console.error('PLAYER ERROR', err)
+        // await this.playNextOrStop()
+      })
+      this.connection.subscribe(this._player)
+    }
+
     return this._player
   }
 
@@ -89,18 +123,35 @@ export class VoiceAdapter extends EventEmitter {
     })
   }
 
+  /**
+   *
+   * @param voiceChannel
+   * @param media
+   */
   static async playOnChannel(
     voiceChannel: VoiceBasedChannel,
     media: MediaInfoStored,
-  ): Promise<{ status: 'played' | 'queued'; index: number }> {
+  ): Promise<{
+    connection: VoiceAdapter
+    status: 'played' | 'queued'
+    index: number
+  }> {
     const { connections } = await import('./voice.js')
     if (connections[voiceChannel.id]) {
       const index = await connections[voiceChannel.id].addToQueue(media)
-      return { status: 'queued', index }
+      return {
+        connection: connections[voiceChannel.id],
+        status: 'queued',
+        index,
+      }
     }
     await VoiceAdapter.fromVoiceChannel(voiceChannel).start()
     connections[voiceChannel.id].play(media)
-    return { status: 'played', index: 0 }
+    return {
+      connection: connections[voiceChannel.id],
+      status: 'played',
+      index: 0,
+    }
   }
 
   /**
@@ -112,43 +163,9 @@ export class VoiceAdapter extends EventEmitter {
     // which is unfortunate.
     const { connections } = await import('./voice.js')
     if (connections[this.channelId]) {
-      throw new Error('ALREADY_EXISTS')
+      throw new VoiceConnectionExistsError()
     }
     connections[this.channelId] = this
-    this._connection = joinVoiceChannel({
-      guildId: this.guildId,
-      channelId: this.channelId,
-      adapterCreator: this.adapterCreator,
-    })
-    this._connection.once('disconnected', async () => {
-      // specify that we don't need to destroy the connection, because it's already being destroyed
-      await this.stop({ destroyConnection: false })
-    })
-
-    this._player = createAudioPlayer({
-      behaviors: {
-        // this noSubscriber behaviour seems very wonky. not sure why it's needed.
-        // sometimes gets stuck in play/idle loop, where a playing track immediately
-        // goes idle, which causes it to skip to the next track.
-        // possibly exacerbated by cpu load? unsure.
-        noSubscriber: NoSubscriberBehavior.Play,
-        // both of these options seem to cause big problems and aren't respected by
-        // the discord.js module or something, idk. seems wacky AF.
-        // set it to infinity to make it fuck off, hopefully.
-        maxMissedFrames: Infinity,
-      },
-      // not even sure what this does. nothing from the looks of it.
-      debug: true,
-    })
-    this._player.on('stateChange', ({ status }) => {
-      this._paused = status === 'paused'
-      this._connection.setSpeaking(status === 'playing')
-    })
-    this._player.on('error', async (err) => {
-      console.error('PLAYER ERROR', err)
-      // await this.playNextOrStop()
-    })
-    this._connection.subscribe(this._player)
 
     this.emit('start', { channelId: this.channelId })
   }
@@ -220,20 +237,20 @@ export class VoiceAdapter extends EventEmitter {
     // duplicates and some files being unplayable. attempted to
     // make the index pruning more aggressive to solve, but this
     // part should do something more obvious when it detects problems.
-    this._player.off('idle', this._boundPlayNext)
+    this.player.off('idle', this._boundPlayNext)
     // .stop() probably isn't necessary, but it doesn't seem to hurt anything.
-    this._player.stop()
+    this.player.stop()
     // listen for the `playing` event one time
-    this._player.once('playing', () => {
+    this.player.once('playing', () => {
       // make sure we know which media is playing currently
       this._nowPlaying = media
       // send out a `nowplaying` event with the media
       this.emit('nowplaying', { media })
       // when the audio player goes idle, attempt to play the next queued track
-      this._player.once('idle', this._boundPlayNext)
+      this.player.once('idle', this._boundPlayNext)
     })
     // play the new audio resource after events are set up
-    this._player.play(resource)
+    this.player.play(resource)
   }
 
   /**
@@ -283,7 +300,18 @@ export class VoiceAdapter extends EventEmitter {
             // this will throw if it can't be deleted - probably expired token
             await previousNpReply.delete()
           } catch (err) {
-            console.error(err)
+            if (err instanceof DiscordAPIError) {
+              switch (err.code) {
+                case 50027: // Invalid Webhook Token (making requests on old message, ~15m or so)
+                  // case 10008: // Unknown Message (probably just an already deleted message? check if this really happens here)
+                  break
+                default:
+                  console.error(err)
+                  break
+              }
+            } else {
+              console.error(err)
+            }
           }
         }
       })(),
@@ -346,9 +374,11 @@ export class VoiceAdapter extends EventEmitter {
               },
             })
           } else {
-            await replyOrFollowUp(interaction, {
-              content: 'Not playing 😿',
-              ephemeral: true,
+            deleteMessageAfterTimeout({
+              message: await replyOrFollowUp(interaction, {
+                content: 'Not playing 😿',
+                ephemeral: true,
+              }),
             })
           }
         }
