@@ -1,10 +1,12 @@
 // we could just use readdir to find all of these commands instead of doing it manually here.
 // oh well. better to be explicit, or something?
 export { default as clear } from './clear.js'
+export { default as download } from './download.js'
 export { default as np } from './np.js'
 export { default as pause } from './pause.js'
 export { default as play } from './play.js'
 export { default as playall } from './playall.js'
+export { default as query } from './query.js'
 export { default as queue } from './queue.js'
 export { default as scan } from './scan.js'
 export { default as search } from './search.js'

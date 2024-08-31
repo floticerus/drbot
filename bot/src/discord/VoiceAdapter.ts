@@ -16,6 +16,7 @@ import {
 } from '@discordjs/voice'
 import type { MediaInfoStored } from '~/bot/types/types.js'
 import { EventEmitter } from 'node:events'
+import { createReadStream } from 'node:fs'
 import {
   deleteMessageAfterTimeout,
   getDisplayStringForMedia,
@@ -386,5 +387,26 @@ export class VoiceAdapter extends EventEmitter {
     ])
 
     return this._npReply
+  }
+
+  async download(
+    interaction: Interaction,
+    media: MediaInfoStored = this._nowPlaying,
+  ) {
+    if (media) {
+      if (interaction.isRepliable()) {
+        const response = await interaction.reply(
+          `**Preparing download**: ${getDisplayStringForMedia(media)}`,
+        )
+        await response.edit({
+          content: `**Download**: ${getDisplayStringForMedia(media)}`,
+          files: [createReadStream(media.path)],
+        })
+      } else {
+        console.log('Cannot attach file to a non-repliable interaction')
+      }
+    } else {
+      console.log('No media to download')
+    }
   }
 }

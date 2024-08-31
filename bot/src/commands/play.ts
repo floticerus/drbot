@@ -12,13 +12,11 @@ import {
 export default {
   data: new SlashCommandBuilder()
     .setName('play')
-    .setDescription(
-      'Plays or queues the first audio track returned in voice chat',
-    )
+    .setDescription('Plays or queues the first track returned in voice chat')
     .addStringOption((option) =>
       option
         .setName('query')
-        .setDescription('Search query used to find a file to play')
+        .setDescription('Search query used to find a track to play')
         .setMinLength(1),
     ),
   // TODO this interaction should be combined with /query and /playall, probably with a call in VoiceAdapter
@@ -43,10 +41,13 @@ export default {
 
                 switch (status) {
                   case 'queued':
-                    // we don't need to delete these - i think it's nice to have a history? idk
-                    await interaction.reply(
-                      `**Queued**: ${getDisplayStringForMedia(connection.queue[index])}`,
-                    )
+                    deleteMessageAfterTimeout({
+                      duration: 1000 * 60 * 10, // 10 minutes
+                      message: await interaction.reply(
+                        `**Queued**: ${getDisplayStringForMedia(connection.queue[index])}`,
+                      ),
+                    })
+
                     break
                   case 'played':
                     await connection.displayNowPlayingReply(interaction)
