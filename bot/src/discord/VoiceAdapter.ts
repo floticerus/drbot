@@ -2,7 +2,6 @@ import {
   DiscordAPIError,
   type Interaction,
   type InteractionResponse,
-  type InternalDiscordGatewayAdapterCreator,
   type Message,
   type VoiceBasedChannel,
 } from 'discord.js'
@@ -10,6 +9,7 @@ import {
   AudioPlayer,
   createAudioPlayer,
   createAudioResource,
+  type DiscordGatewayAdapterCreator,
   joinVoiceChannel,
   NoSubscriberBehavior,
   VoiceConnection,
@@ -28,7 +28,7 @@ import { VoiceConnectionExistsError } from '~/bot/errors/index.js'
 export type VoiceAdapterOptions = {
   readonly channelId: string
   readonly guildId: string
-  readonly adapterCreator: InternalDiscordGatewayAdapterCreator
+  readonly adapterCreator: DiscordGatewayAdapterCreator
 }
 
 export class VoiceAdapter extends EventEmitter {
@@ -43,7 +43,7 @@ export class VoiceAdapter extends EventEmitter {
 
   public readonly channelId: string
   public readonly guildId: string
-  public readonly adapterCreator: InternalDiscordGatewayAdapterCreator
+  public readonly adapterCreator: DiscordGatewayAdapterCreator
 
   protected _npReply?: InteractionResponse | Message
 
