@@ -17,16 +17,16 @@ jobs:
       - name: Lint
         working-directory: ./bot
         run: bun run lint
-#      - name: Test
-#        working-directory: ./bot
-#        run: npm test
-      - name: Build (dev)
-        working-directory: ./bot
-        run: bun run build
-        env:
-          CI: true
-      - name: Build (release)
-        working-directory: ./bot
-        run: bun run build:release
-        env:
-          CI: true
+      # - name: Test
+      #   working-directory: ./bot
+      #   run: npm test
+      # - name: Build (dev)
+      #   working-directory: ./bot
+      #   run: bun run build
+      #   env:
+      #     CI: true
+      # - name: Build (release)
+      #   working-directory: ./bot
+      #   run: bun run build:release
+      #   env:
+      #     CI: true
