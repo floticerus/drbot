@@ -18,7 +18,7 @@ const client = new Client({
   ],
 })
 
-client.on('ready', () => {
+client.on('clientReady', () => {
   events.emit('discord:ready')
 })
 
