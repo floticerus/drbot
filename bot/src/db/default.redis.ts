@@ -6,10 +6,10 @@ const client = await createClient({ url: process.env.REDIS_URL })
   })
   .connect()
 
-let indexInfo: { num_docs: string } | undefined = undefined
+let indexInfo: { num_docs: number | `${number}` } | undefined = undefined
 
 try {
-  indexInfo = await client.ft.info('idx:media')
+  indexInfo = await client.ft.info('idx:media') as { num_docs: number | `${number}` }
 } catch (err) {
   console.error(err)
 }
@@ -27,7 +27,9 @@ if (indexInfo) {
       filename: { type: SCHEMA_FIELD_TYPE.TEXT, WEIGHT: 3 },
       genre: { type: SCHEMA_FIELD_TYPE.TEXT, WEIGHT: 3 },
       title: { type: SCHEMA_FIELD_TYPE.TEXT, WEIGHT: 6 },
+      // @ts-expect-error WEIGHT is undefined here?
       track: { type: SCHEMA_FIELD_TYPE.NUMERIC, WEIGHT: 4 },
+      // @ts-expect-error WEIGHT is undefined here?
       year: { type: SCHEMA_FIELD_TYPE.NUMERIC, WEIGHT: 2 },
     },
     {
