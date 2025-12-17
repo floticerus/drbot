@@ -2,7 +2,7 @@
 
 [![Sponsor][sponsor-badge]][sponsor]
 [![TypeScript version][ts-badge]][typescript-5-4]
-[![Node.js version][nodejs-badge]][nodejs]
+[![Bun version][bun-badge]][bun]
 [![GPLv3+][license-badge]][license]
 
 [![Build Status - GitHub Actions][gha-ci-badge]][gha-ci]
@@ -23,10 +23,10 @@ Support this project by becoming a [sponsor][sponsor].
 Licensed under the GNU GENERAL PUBLIC LICENSE. See the [LICENSE](https://github.com/floticerus/drbot/blob/main/LICENSE) file for details.
 
 [ts-badge]: https://img.shields.io/badge/TypeScript-5.4-blue.svg
-[nodejs-badge]: https://img.shields.io/badge/Node.js->=%2020.9-blue.svg
-[nodejs]: https://nodejs.org/dist/latest-v20.x/docs/api/
-[gha-ci-badge]: https://github.com/floticerus/drbot/actions/workflows/nodejs.yaml/badge.svg
-[gha-ci]: https://github.com/floticerus/drbot/actions/workflows/nodejs.yaml
+[bun-badge]: https://img.shields.io/badge/bun-%3E=%201-blue.svg
+[bun]: https://bun.com/docs
+[gha-ci-badge]: https://github.com/floticerus/drbot/actions/workflows/bun.yaml/badge.svg
+[gha-ci]: https://github.com/floticerus/drbot/actions/workflows/bun.yaml
 [gha-dockerhub-badge]: https://github.com/floticerus/drbot/actions/workflows/dockerhub.yaml/badge.svg
 [gha-dockerhub]: https://github.com/floticerus/drbot/actions/workflows/dockerhub.yaml
 [typescript]: https://www.typescriptlang.org/
