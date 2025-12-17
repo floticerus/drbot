@@ -14,7 +14,7 @@ export const pruneIndex = async (): Promise<void> => {
   const { documents } = await redisClient.ft.search('idx:media', '*', {
     // only return the attribute we need
     RETURN: ['path'],
-  })
+  })  as { documents: {id: string, value: any}[] } // this cast is nasty. why do we need it?
 
   const query = redisClient.multi()
   let numDeleted = 0
