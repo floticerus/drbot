@@ -12,28 +12,30 @@ COPY ./package.json ./bun.lock ./
 # build the app in production mode
 ENV NODE_ENV="production"
 
-# install npm modules with `npm ci`. package-lock.json is required for this.
-# RUN npm ci --omit=dev --no-audit
-
+# install modules
 RUN bun i --omit=dev --frozen-lockfile --verbose
 
 # copy the entire app
 COPY ./ .
 
-# build the release version of the bot
-# RUN bun run build:release
+# build the bun version of the bot. this creates a single file at build/output.
+# @snazzah/davey can't be found when we do this. :(
+# RUN bun run build:bun
 
 # runtime container
-# note we could make this smaller by using `FROM alpine` and generating a single executable app above.
-# i'm not sure how feasible a `FROM scratch` container would be here, because of ffmpeg.
+# distroless would be nice. currently distroless is failing with @snazzah/davey.
 FROM oven/bun:alpine
-WORKDIR /drbot
+# since we're using the default bun user, use home folder as working dir
+WORKDIR /home/bun/drbot
 
-# install runtime deps on alpine - ffmpeg is used to convert files into opus format
-RUN apk add --no-cache ffmpeg
+# install runtime deps on alpine - ffmpeg is used to convert files into opus format.
+# we could use ffmpeg-static module instead, but we're stuck with alpine atm anyway.
+RUN apk --no-cache add ffmpeg
 
 # copy the working dir from `build` stage, because it contains everything we need (including compiled libsodium)
 COPY --from=build /src ./
+# COPY --from=build /src/node_modules /src/src .
+# COPY --from=build /src/build/output .
 
 # start the app in production mode
 ENV NODE_ENV="production"
@@ -42,4 +44,5 @@ ENV NODE_ENV="production"
 USER bun
 
 # start the app!
-ENTRYPOINT ["bun", "run", "src/main.ts"]
+ENTRYPOINT ["bun", "run", "./src/main.ts"]
+# ENTRYPOINT ["./output"]
