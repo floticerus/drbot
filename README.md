@@ -25,8 +25,8 @@ Licensed under the GNU GENERAL PUBLIC LICENSE. See the [LICENSE](https://github.
 [ts-badge]: https://img.shields.io/badge/TypeScript-5.4-blue.svg
 [bun-badge]: https://img.shields.io/badge/bun-%3E=%201-blue.svg
 [bun]: https://bun.com/docs
-[gha-ci-badge]: https://github.com/floticerus/drbot/actions/workflows/nodejs.yaml/badge.svg
-[gha-ci]: https://github.com/floticerus/drbot/actions/workflows/nodejs.yaml
+[gha-ci-badge]: https://github.com/floticerus/drbot/actions/workflows/bun.yaml/badge.svg
+[gha-ci]: https://github.com/floticerus/drbot/actions/workflows/bun.yaml
 [gha-dockerhub-badge]: https://github.com/floticerus/drbot/actions/workflows/dockerhub.yaml/badge.svg
 [gha-dockerhub]: https://github.com/floticerus/drbot/actions/workflows/dockerhub.yaml
 [typescript]: https://www.typescriptlang.org/
