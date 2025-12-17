@@ -32,7 +32,7 @@ export default {
               documents: [result],
             } = await redisClient.ft.search('idx:media', query, {
               LIMIT: { from: 0, size: 1 },
-            })
+            }) as { documents: {value: unknown}[] } // this cast is nasty. why do we need it?
 
             if (result) {
               if (isMediaInfoStored(result.value)) {

@@ -14,12 +14,13 @@ export const pruneIndex = async (): Promise<void> => {
   const { documents } = await redisClient.ft.search('idx:media', '*', {
     // only return the attribute we need
     RETURN: ['path'],
-  })
+  })  as { documents: {id: string, value: unknown}[] } // this cast is nasty. why do we need it?
 
   const query = redisClient.multi()
   let numDeleted = 0
 
   await Promise.all(
+    // @ts-expect-error sometimes i hate ts
     documents.map(async ({ id, value: { path: _path } }) => {
       await scanMediaQueue.add(async () => {
         const path = _path.toString()

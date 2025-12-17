@@ -34,7 +34,7 @@ export default {
               query,
               // redis seems to have a maximum of 10000. maybe it's adjustable, and this should be a var.
               { LIMIT: { from: 0, size: 10000 } },
-            )
+            ) as { documents: {value: unknown}[] } // this cast is nasty. why do we need it?
 
             if (documents && documents.length !== 0) {
               const lines: Array<string> = []

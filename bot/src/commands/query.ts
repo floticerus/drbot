@@ -54,7 +54,7 @@ export default {
               {
                 LIMIT: { from: 0, size: limit },
               },
-            )
+            ) as { documents: {value: unknown}[] } // this cast is nasty. why do we need it?
 
             if (documents && documents.length !== 0) {
               const lines: Array<string> = []
