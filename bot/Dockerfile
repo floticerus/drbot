@@ -44,7 +44,7 @@ ENV NODE_ENV="production"
 # use the bun user i guess
 USER bun
 
-# start the app!
+# run the ts files directly with bun
 ENTRYPOINT ["bun", "run", "./src/main.ts"]
 
 # what we would use with single file output.
