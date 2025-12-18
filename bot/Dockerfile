@@ -2,9 +2,8 @@
 FROM oven/bun:alpine AS build
 WORKDIR /bot
 
-# install build deps on alpine - build base and python3 are needed to compile libsodium (via sodium-native)
-# we need nodejs for node-gyp stuff apparently. it doesn't wind up in the final image.
-RUN apk add --no-cache build-base python3 nodejs
+# install build deps on alpine. we need nodejs for node-gyp stuff apparently.
+RUN apk add --no-cache nodejs
 
 # copy both package.json and bun.lock
 COPY ./package.json ./bun.lock ./
@@ -34,7 +33,7 @@ WORKDIR /home/bun/drbot
 # we're opting to use ffmpeg-static module instead, but this is how to add ffmpeg here.
 # RUN apk --no-cache add ffmpeg
 
-# copy the working dir from `build` stage, because it contains everything we need (including compiled libsodium)
+# copy the working dir from `build` stage, because it contains everything we need
 COPY --from=build /bot ./
 # COPY --from=build /bot/build/drbot .
 
