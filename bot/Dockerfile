@@ -29,12 +29,11 @@ FROM oven/bun:alpine
 WORKDIR /home/bun/drbot
 
 # install runtime deps on alpine - ffmpeg is used to convert files into opus format.
-# we could use ffmpeg-static module instead, but we're stuck with alpine atm anyway.
-RUN apk --no-cache add ffmpeg
+# we're opting to use ffmpeg-static module instead, but this is how to add ffmpeg here.
+# RUN apk --no-cache add ffmpeg
 
 # copy the working dir from `build` stage, because it contains everything we need (including compiled libsodium)
 COPY --from=build /src ./
-# COPY --from=build /src/node_modules /src/src .
 # COPY --from=build /src/build/output .
 
 # start the app in production mode
