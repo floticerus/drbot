@@ -38,7 +38,7 @@
   "scripts": {
     "start": "bun build/src/main.js",
     "clean": "rimraf coverage build tmp",
-    "build": "bun build src/main.ts --compile --minify --outfile build/drbot",
+    "build": "bun build --compile src/main.ts --minify --outfile build/drbot",
     "lint": "bunx --bun biome format .",
     "test": "bunx --bun jest --coverage",
     "test:watch": "bunx --bun jest --watch"
