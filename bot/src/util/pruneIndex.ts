@@ -1,7 +1,7 @@
-import redisClient from '~/bot/db/index.js'
-import { scanMediaQueue } from '~/bot/queues/index.js'
-import { events } from '~/bot/events/index.js'
 import { parseFile } from 'music-metadata'
+import redisClient from '~/bot/db/index.js'
+import { events } from '~/bot/events/index.js'
+import { scanMediaQueue } from '~/bot/queues/index.js'
 
 /**
  * removes entries from db if we no longer have access
@@ -11,10 +11,10 @@ export const pruneIndex = async (): Promise<void> => {
 
   const startTime = Date.now()
 
-  const { documents } = await redisClient.ft.search('idx:media', '*', {
+  const { documents } = (await redisClient.ft.search('idx:media', '*', {
     // only return the attribute we need
     RETURN: ['path'],
-  })  as { documents: {id: string, value: unknown}[] } // this cast is nasty. why do we need it?
+  })) as { documents: { id: string; value: unknown }[] } // this cast is nasty. why do we need it?
 
   const query = redisClient.multi()
   let numDeleted = 0

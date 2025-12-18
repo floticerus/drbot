@@ -2,8 +2,8 @@ import 'dotenv/config'
 import 'web-streams-polyfill/polyfill'
 import '~/bot/discord/commands.setup.js'
 import '~/bot/discord/client.js'
-import { buildIndex, watchForMedia } from '~/bot/util/index.js'
 import { boolean } from 'boolean'
+import { buildIndex, watchForMedia } from '~/bot/util/index.js'
 
 const startupFunctions: Array<Promise<unknown>> = []
 

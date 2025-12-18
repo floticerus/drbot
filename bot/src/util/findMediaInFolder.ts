@@ -2,8 +2,8 @@ import type { PathLike } from 'node:fs'
 import { readdir } from 'node:fs/promises'
 import { join as joinPath } from 'node:path'
 import { parseFile } from 'music-metadata'
-import type { MediaInfo } from '~/bot/types/types.js'
 import { scanMediaQueue } from '~/bot/queues/index.js'
+import type { MediaInfo } from '~/bot/types/types.js'
 
 export type FindMediaInFolderOptions = {
   path: PathLike

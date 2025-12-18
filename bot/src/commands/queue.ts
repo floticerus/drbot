@@ -1,6 +1,7 @@
 import { MessageFlags, SlashCommandBuilder } from 'discord.js'
-import type { CommandInfo } from '~/bot/types/types.js'
+import formatDuration from 'format-duration'
 import { connections } from '~/bot/discord/voice.js'
+import type { CommandInfo } from '~/bot/types/types.js'
 import {
   deleteMessageAfterTimeout,
   getDisplayStringForMedia,
@@ -8,7 +9,6 @@ import {
   getVoiceChannelForInteraction,
   pluralize,
 } from '~/bot/util/index.js'
-import formatDuration from 'format-duration'
 
 export default {
   data: new SlashCommandBuilder()

@@ -9,7 +9,9 @@ const client = await createClient({ url: process.env.REDIS_URL })
 let indexInfo: { num_docs: number | `${number}` } | undefined = undefined
 
 try {
-  indexInfo = await client.ft.info('idx:media') as { num_docs: number | `${number}` }
+  indexInfo = (await client.ft.info('idx:media')) as {
+    num_docs: number | `${number}`
+  }
 } catch (err) {
   console.error(err)
 }

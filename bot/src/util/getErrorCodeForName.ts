@@ -1,5 +1,5 @@
-import type { DrBotErrorName } from '~/bot/types/error.types.js'
 import { errorNameCodeMap } from '~/bot/errors/index.js'
+import type { DrBotErrorName } from '~/bot/types/error.types.js'
 
 export const getErrorCodeForName = (name: DrBotErrorName) => {
   const code = errorNameCodeMap[name ?? 'UNKNOWN']

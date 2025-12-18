@@ -1,6 +1,6 @@
 import { MessageFlags, SlashCommandBuilder } from 'discord.js'
-import type { CommandInfo } from '~/bot/types/types.js'
 import { connections } from '~/bot/discord/voice.js'
+import type { CommandInfo } from '~/bot/types/types.js'
 import {
   deleteMessageAfterTimeout,
   getVoiceChannelForInteraction,

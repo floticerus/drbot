@@ -48,13 +48,13 @@ export default {
           try {
             const query = interaction.options.getString('query')
             const limit = interaction.options.getNumber('limit') ?? 1
-            const { documents } = await redisClient.ft.search(
+            const { documents } = (await redisClient.ft.search(
               'idx:media',
               query,
               {
                 LIMIT: { from: 0, size: limit },
               },
-            ) as { documents: {value: unknown}[] } // this cast is nasty. why do we need it?
+            )) as { documents: { value: unknown }[] } // this cast is nasty. why do we need it?
 
             if (documents && documents.length !== 0) {
               const lines: Array<string> = []

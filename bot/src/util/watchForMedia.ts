@@ -1,7 +1,7 @@
+import { basename } from 'node:path'
 import { watch } from 'chokidar'
 import redisClient from '~/bot/db/index.js'
 import { findMediaAtPath } from '~/bot/util/findMediaAtPath.js'
-import { basename } from 'node:path'
 
 export const watchForMedia = async (): Promise<void> => {
   // TODO we might need to batch these and run all with multi
