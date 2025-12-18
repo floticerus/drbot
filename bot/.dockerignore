@@ -1,4 +1,13 @@
-build/
-.idea/
-node_modules/
-.env
+# ignore everything
+*
+
+# allow src
+!/src
+
+# allow build stuff
+!/package.json
+!/bun.lock
+!/tsconfig.json
+
+# allow license, just cuz
+!/LICENSE

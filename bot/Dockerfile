@@ -1,9 +1,9 @@
 # build container
 FROM oven/bun:alpine AS build
-WORKDIR /src
+WORKDIR /bot
 
 # install build deps on alpine - build base and python3 are needed to compile libsodium (via sodium-native)
-# we need nodejs for node-gyp stuff apparently. maybe there's a way to install a smaller package.
+# we need nodejs for node-gyp stuff apparently. it doesn't wind up in the final image.
 RUN apk add --no-cache build-base python3 nodejs
 
 # copy both package.json and bun.lock
@@ -23,8 +23,10 @@ COPY ./ .
 # RUN bun run build
 
 # runtime container
-# distroless would be nice. currently distroless is failing with @snazzah/davey.
+# scratch or distroless would be nice. currently distroless is failing with @snazzah/davey.
 FROM oven/bun:alpine
+# scratch is failing with a not found error after attempting to execute the built file
+# FROM scratch
 # since we're using the default bun user, use home folder as working dir
 WORKDIR /home/bun/drbot
 
@@ -33,8 +35,8 @@ WORKDIR /home/bun/drbot
 # RUN apk --no-cache add ffmpeg
 
 # copy the working dir from `build` stage, because it contains everything we need (including compiled libsodium)
-COPY --from=build /src ./
-# COPY --from=build /src/build/output .
+COPY --from=build /bot ./
+# COPY --from=build /bot/build/drbot .
 
 # start the app in production mode
 ENV NODE_ENV="production"
@@ -45,5 +47,6 @@ USER bun
 # start the app!
 ENTRYPOINT ["bun", "run", "./src/main.ts"]
 
-# what we would use with single file output
-# ENTRYPOINT ["./output"]
+# what we would use with single file output.
+# on scratch this is failing with not found, even though it's 100% there.
+# ENTRYPOINT ["./drbot"]
