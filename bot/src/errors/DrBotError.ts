@@ -13,6 +13,6 @@ export class DrBotError extends Error {
     this.code = getErrorCodeForName(name)
   }
 
-  public readonly name: DrBotErrorName
+  public override readonly name: DrBotErrorName
   public readonly code: number
 }

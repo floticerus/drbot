@@ -1,5 +1,5 @@
-import type { MediaInfoStored } from '~/bot/types/types.js'
 import formatDuration from 'format-duration'
+import type { MediaInfoStored } from '~/bot/types/types.js'
 import { getSafeNumber } from '~/bot/util/index.js'
 
 export const getDisplayStringForMedia = ({

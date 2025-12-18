@@ -1,8 +1,8 @@
-import { basename } from 'node:path'
 import type { PathLike } from 'node:fs'
-import type { MediaInfo } from '~/bot/types/types.js'
-import { parseFile } from 'music-metadata'
+import { basename } from 'node:path'
 import mime from 'mime/lite'
+import { parseFile } from 'music-metadata'
+import type { MediaInfo } from '~/bot/types/types.js'
 
 export const findMediaAtPath = (
   path: PathLike,

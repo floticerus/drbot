@@ -1,5 +1,5 @@
-import events from './events.js'
 import { pluralize } from '~/bot/util/index.js'
+import events from './events.js'
 
 events.on('index:start', () => {
   console.log('Building index... this could take a little bit')

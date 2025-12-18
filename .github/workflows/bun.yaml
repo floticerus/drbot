@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -20,11 +20,11 @@ jobs:
       # - name: Test
       #   working-directory: ./bot
       #   run: npm test
-      # - name: Build (dev)
-      #   working-directory: ./bot
-      #   run: bun run build
-      #   env:
-      #     CI: true
+      - name: Build (dev)
+        working-directory: ./bot
+        run: bun run build
+        env:
+          CI: true
       # - name: Build (release)
       #   working-directory: ./bot
       #   run: bun run build:release

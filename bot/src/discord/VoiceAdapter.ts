@@ -1,3 +1,14 @@
+import { EventEmitter } from 'node:events'
+import { createReadStream } from 'node:fs'
+import {
+  type AudioPlayer,
+  createAudioPlayer,
+  createAudioResource,
+  type DiscordGatewayAdapterCreator,
+  joinVoiceChannel,
+  NoSubscriberBehavior,
+  type VoiceConnection,
+} from '@discordjs/voice'
 import {
   DiscordAPIError,
   type Interaction,
@@ -5,25 +16,14 @@ import {
   type Message,
   type VoiceBasedChannel,
 } from 'discord.js'
-import {
-  AudioPlayer,
-  createAudioPlayer,
-  createAudioResource,
-  type DiscordGatewayAdapterCreator,
-  joinVoiceChannel,
-  NoSubscriberBehavior,
-  VoiceConnection,
-} from '@discordjs/voice'
+import { VoiceConnectionExistsError } from '~/bot/errors/index.js'
 import type { MediaInfoStored } from '~/bot/types/types.js'
-import { EventEmitter } from 'node:events'
-import { createReadStream } from 'node:fs'
 import {
   deleteMessageAfterTimeout,
   getDisplayStringForMedia,
   replyOrFollowUp,
   shuffleInPlace,
 } from '~/bot/util/index.js'
-import { VoiceConnectionExistsError } from '~/bot/errors/index.js'
 
 export type VoiceAdapterOptions = {
   readonly channelId: string
@@ -177,7 +177,9 @@ export class VoiceAdapter extends EventEmitter {
    */
   async stop({
     destroyConnection = true,
-  }: { destroyConnection?: boolean } = {}): Promise<void> {
+  }: {
+    destroyConnection?: boolean
+  } = {}): Promise<void> {
     // we're importing this way to avoid circular deps.
     // it's currently the only reason this function is async,
     // which is unfortunate.

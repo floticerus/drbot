@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { MessageFlags, SlashCommandBuilder } from 'discord.js'
 import type { CommandInfo } from '~/bot/types/types.js'
 import redisClient from '~/bot/db/index.js'
 import { isMediaInfoStored } from '~/bot/types/predicates.js'
@@ -30,9 +30,9 @@ export default {
             const query = interaction.options.getString('query')
             const {
               documents: [result],
-            } = await redisClient.ft.search('idx:media', query, {
+            } = (await redisClient.ft.search('idx:media', query, {
               LIMIT: { from: 0, size: 1 },
-            }) as { documents: {value: unknown}[] } // this cast is nasty. why do we need it?
+            })) as { documents: { value: unknown }[] } // this cast is nasty. why do we need it?
 
             if (result) {
               if (isMediaInfoStored(result.value)) {
@@ -60,7 +60,7 @@ export default {
                     deleteMessageAfterTimeout({
                       message: await interaction.reply({
                         content: 'Server error',
-                        ephemeral: true,
+                        flags: MessageFlags.Ephemeral,
                       }),
                     })
                     break
@@ -69,7 +69,7 @@ export default {
                 deleteMessageAfterTimeout({
                   message: await interaction.reply({
                     content: 'Invalid MediaInfo response 🤯',
-                    ephemeral: true,
+                    flags: MessageFlags.Ephemeral,
                   }),
                 })
               }
@@ -88,7 +88,7 @@ export default {
           deleteMessageAfterTimeout({
             message: await interaction.reply({
               content: 'Voice channel is not joinable 😒',
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             }),
           })
         }
@@ -96,7 +96,7 @@ export default {
         deleteMessageAfterTimeout({
           message: await interaction.reply({
             content: 'Must be in a voice channel to use this command 😱',
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           }),
         })
       }

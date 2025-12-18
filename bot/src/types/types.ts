@@ -1,9 +1,9 @@
+import type { PathLike } from 'node:fs'
 import type {
   Interaction,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
 } from 'discord.js'
-import type { PathLike } from 'node:fs'
 import type { IAudioMetadata } from 'music-metadata'
 
 export type CommandCallback = (interaction: Interaction) => Promise<void>

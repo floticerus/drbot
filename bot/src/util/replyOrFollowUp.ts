@@ -1,6 +1,6 @@
 import {
-  Interaction,
-  InteractionReplyOptions,
+  type Interaction,
+  type InteractionReplyOptions,
   InteractionResponse,
   Message,
   MessagePayload,

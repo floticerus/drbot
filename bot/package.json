@@ -1,25 +1,7 @@
 {
   "name": "drbot",
-  "version": "0.0.1",
-  "description": "Discord music bot for local files",
-  "type": "module",
+  "version": "0.1.0",
   "author": "Dr. Kevin",
-  "license": "GPL-3.0+",
-  "private": true,
-  "scripts": {
-    "start": "bun build/src/main.js",
-    "clean": "rimraf coverage build tmp",
-    "prebuild": "bun run lint",
-    "build": "bunx tsc && bunx tsc-alias",
-    "build:watch": "bunx tsc && (bunx concurrently \"bunx tsc -w\" \"bunx tsc-alias -w\")",
-    "build:release": "bunx tsc -p tsconfig.release.json && bunx tsc-alias -p tsconfig.release.json",
-    "build:bun": "bun build src/main.ts --compile --outfile build/output",
-    "lint": "bunx eslint . --ext .ts --ext .mts",
-    "test": "bunx jest --coverage",
-    "prettier": "bunx prettier --config .prettierrc.json --write .",
-    "test:watch": "bunx jest --watch",
-    "npm:update": "bunx npm-check-updates -i"
-  },
   "dependencies": {
     "@discordjs/opus": "^0.10.0",
     "@discordjs/voice": "^0.19.0",
@@ -29,39 +11,38 @@
     "discord-api-types": "^0.38.37",
     "discord.js": "^14.25.1",
     "dotenv": "^17.2.3",
+    "ffmpeg-static": "^5.3.0",
     "format-duration": "^3.0.2",
     "mime": "^4.1.0",
     "music-metadata": "^11.10.3",
     "p-queue": "^9.0.1",
     "redis": "^5.10.0",
     "sodium-native": "^5.0.10",
-    "tsc-alias": "^1.8.16",
-    "tslib": "~2.8",
-    "typescript": "~5.4.5",
     "web-streams-polyfill": "^4.2.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.3.10",
+    "@types/bun": "^1.3.4",
     "@types/jest": "~29.5",
-    "@typescript-eslint/eslint-plugin": "~7.6",
-    "@typescript-eslint/parser": "~7.6",
-    "bun-types": "^1.3.5",
     "concurrently": "^9.2.1",
-    "eslint": "~8.56",
-    "eslint-config-prettier": "~9.1",
-    "eslint-plugin-jest": "~28.8",
     "jest": "~29.7",
-    "npm-check-updates": "^19.2.0",
-    "prettier": "~3.7",
     "rimraf": "~6.1",
     "ts-api-utils": "~2.1",
-    "ts-jest": "~29.4"
+    "ts-jest": "~29.4",
+    "typescript": "~5.4.5"
   },
-  "keywords": [
-    "discord",
-    "music",
-    "bot",
-    "local",
-    "audio",
-    "voice"
-  ]
+  "description": "Discord music bot for local files",
+  "keywords": ["discord", "music", "bot", "local", "audio", "voice"],
+  "license": "GPL-3.0+",
+  "private": true,
+  "scripts": {
+    "start": "bun build/src/main.js",
+    "clean": "rimraf coverage build tmp",
+    "prebuild": "bun run lint",
+    "build": "bun build src/main.ts --compile --outfile build/output",
+    "lint": "bunx --bun biome format .",
+    "test": "bunx --bun jest --coverage",
+    "test:watch": "bunx --bun jest --watch"
+  },
+  "type": "module"
 }

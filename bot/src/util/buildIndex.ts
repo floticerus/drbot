@@ -1,11 +1,10 @@
-import { basename } from 'node:path'
+import { readdir } from 'node:fs/promises'
+import { basename, join as joinPath } from 'node:path'
+import { parseFile } from 'music-metadata'
 import { default as redisClient } from '~/bot/db/index.js'
 import { events } from '~/bot/events/index.js'
-import { readdir } from 'node:fs/promises'
-import { parseFile } from 'music-metadata'
-import { join as joinPath } from 'path'
-import { pruneIndex } from '~/bot/util/index.js'
 import { scanMediaQueue } from '~/bot/queues/index.js'
+import { pruneIndex } from '~/bot/util/index.js'
 
 export const buildIndex = async (): Promise<void> => {
   events.emit('index:start')

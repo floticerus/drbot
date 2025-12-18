@@ -1,7 +1,7 @@
 import { Client } from 'discord.js'
 import { GatewayIntentBits } from 'discord-api-types/v10'
-import { events } from '~/bot/events/index.js'
 import * as _commands from '~/bot/commands/index.js'
+import { events } from '~/bot/events/index.js'
 import { replyOrFollowUp } from '~/bot/util/index.js'
 
 const commands = Object.values(_commands)

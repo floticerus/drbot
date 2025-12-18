@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { MessageFlags, SlashCommandBuilder } from 'discord.js'
 import type { CommandInfo } from '~/bot/types/types.js'
 import {
   deleteMessageAfterTimeout,
@@ -29,12 +29,12 @@ export default {
         if (voiceChannel.joinable) {
           try {
             const query = interaction.options.getString('query')
-            const { documents } = await redisClient.ft.search(
+            const { documents } = (await redisClient.ft.search(
               'idx:media',
               query,
               // redis seems to have a maximum of 10000. maybe it's adjustable, and this should be a var.
               { LIMIT: { from: 0, size: 10000 } },
-            ) as { documents: {value: unknown}[] } // this cast is nasty. why do we need it?
+            )) as { documents: { value: unknown }[] } // this cast is nasty. why do we need it?
 
             if (documents && documents.length !== 0) {
               const lines: Array<string> = []
@@ -88,7 +88,7 @@ export default {
           deleteMessageAfterTimeout({
             message: await interaction.reply({
               content: 'Voice channel is not joinable 😒',
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             }),
           })
         }
@@ -96,7 +96,7 @@ export default {
         deleteMessageAfterTimeout({
           message: await interaction.reply({
             content: 'Must be in a voice channel to use this command 😱',
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           }),
         })
       }

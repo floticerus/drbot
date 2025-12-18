@@ -27,7 +27,7 @@ export const deleteMessageAfterTimeout = ({
   const timeout = setTimeout(() => {
     message
       .delete()
-      .then(() => onDeleted && onDeleted())
+      .then(() => onDeleted?.())
       .catch(onError)
   }, duration)
 
