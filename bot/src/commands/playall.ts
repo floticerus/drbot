@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { MessageFlags, SlashCommandBuilder } from 'discord.js'
 import type { CommandInfo } from '~/bot/types/types.js'
 import {
   deleteMessageAfterTimeout,
@@ -88,7 +88,7 @@ export default {
           deleteMessageAfterTimeout({
             message: await interaction.reply({
               content: 'Voice channel is not joinable 😒',
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             }),
           })
         }
@@ -96,7 +96,7 @@ export default {
         deleteMessageAfterTimeout({
           message: await interaction.reply({
             content: 'Must be in a voice channel to use this command 😱',
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           }),
         })
       }
